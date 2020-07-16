@@ -119,7 +119,7 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
                assay.cols(),
                38,
                reagents.wells_by_name()['A1','A2','A3','A4'],
-               14000,
+               14000/8,
                tip=None,
                tip_vol=300,
                remaining=None,
