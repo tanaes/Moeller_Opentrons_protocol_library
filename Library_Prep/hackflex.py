@@ -4,10 +4,28 @@ from numpy import ceil
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-pause_bind = 5*60
-pause_mag = 3*60
-pause_dry = 5*60
-pause_elute = 5*60
+# Set to `True` to perform a short run, with brief pauses and only 
+# one column of samples
+test_run = True
+
+if test_run:
+    pause_bind = 5
+    pause_mag = 3
+    pause_dry = 5
+    pause_elute = 5
+
+    # Limit columns
+    cols = ['A1', 'A2']
+else:
+    pause_bind = 5*60
+    pause_mag = 3*60
+    pause_dry = 5*60
+    pause_elute = 5*60
+
+    # Limit columns
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
+  
 
 # bead aspiration flow rate
 bead_flow = .25
@@ -61,16 +79,23 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
+    vol_remaining = super_vol
     for col in cols:
-        # four transfers to remove supernatant:
+        # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         transfers = int(ceil(super_vol/190))
-        for i in range(0,transfers):
-            pipette.aspirate(190, 
-                             plate[col].bottom(z=(transfers+bottom_offset - 1)-i), 
+        while vol_remaining > 0:
+            transfer_vol = min(vol_remaining, 190)
+            if vol_remaining <= 190:
+                z_height = bottom_offset
+            else:
+                z_height = 4
+            pipette.aspirate(transfer_vol,
+                             plate[col].bottom(z=z_height),
                              rate=rate)
             pipette.air_gap(10)
-            pipette.dispense(200, waste.top())
+            pipette.dispense(transfer_vol + 10, waste.top())
+            vol_remaining -= transfer_vol
             pipette.blow_out()
         # we're done with these tips at this point
         if drop_tip:
@@ -200,7 +225,6 @@ def bead_wash(# global arguments
     # - dispense to `cols` in mag plate
     # - drop tips at end
 
-
     # add isopropanol
 
     wash_wells, wash_remaining = add_buffer(pipette,
@@ -318,7 +342,7 @@ def run(protocol: protocol_api.ProtocolContext):
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
                                    4, 'samples')
     i7_primers = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                       9, 'samples')
+                                       9, 'i7 primers')
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
@@ -359,26 +383,35 @@ def run(protocol: protocol_api.ProtocolContext):
                             trash=True)
     # add BLT
     # reagent tips 2
-    pipette_right.distribute(10,
-                             reagents['A1'],
-                             [mag_plate[x] for x in cols],
-                             mix_before=(2,20)
-                             touch_tip=False,
-                             disposal_volume=10,
-                             new_tip='once',
-                             trash=True)
+
+    # mix BLT first
+    pipette_right.pick_up_tip()
+    pipette_right.mix(10,
+                      10,
+                      reagents['A1'])
+    pipette_right.transfer(10,
+                           reagents['A1'],
+                           [mag_plate[x] for x in cols],
+                           mix_before=(2,10),
+                           new_tip='never')
+    pipette_right.drop_tip()
 
     # add sample
-    pipette_right.transfer(10,
-                           [samples[x] for x in cols],
-                           [mag_plate[x] for x in cols],
-                           mix_after=(5, 10),
-                           new_tip='always',
-                           trash=False)
+
+    for col in cols:
+        pipette_right.pick_up_tip(tiprack_samples[col])
+        pipette_right.transfer(10,
+                               samples[col],
+                               mag_plate[col],
+                               mix_after=(5, 10),
+                               new_tip='never',
+                               trash=False)
+        pipette_right.return_tip()
 
     # Prompt user to remove plate and run on thermocycler
-    protocol.pause('Remove plate from magblock and run program TAG on'
-                   ' thermocycler. Then return to magblock.')
+    protocol.pause('Remove plate from magblock, seal, vortex, and run '
+                   'program TAG on thermocycler. Then spin down, unseal, '
+                   'and return to magblock.')
 
 
     # Step 2: Stop reaction
@@ -387,15 +420,15 @@ def run(protocol: protocol_api.ProtocolContext):
     # add TSB to each sample.
     # Prompt user to remove plate and run on thermocycler
     # reagent tips 2
-    pipette_right.distribute(10,
-                             reagents['A2'],
-                             [mag_plate[x].top(z=-1) for x in cols],
-                             touch_tip=True,
-                             disposal_volume=10,
-                             new_tip='once')
+    pipette_right.transfer(10,
+                           reagents['A2'],
+                           [mag_plate[x].top(z=-1) for x in cols],
+                           touch_tip=True,
+                           new_tip='once')
 
-    protocol.pause('Remove plate from magblock, seal, vortex, and run program'
-                   ' PTC on thermocycler. Then unseal & return to magblock.')
+    protocol.pause('Remove plate from magblock, seal, vortex, and run '
+                   'program PTC on thermocycler. Then spin down, unseal, '
+                   'and return to magblock.')
 
 
     # Step 3: Cleanup
@@ -433,6 +466,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=60,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=90,
                                          remaining=None)
 
 
@@ -459,6 +493,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=100,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=90,
                                          remaining=twb_remaining)
 
     # remove supernatant
@@ -489,32 +524,27 @@ def run(protocol: protocol_api.ProtocolContext):
                                           remaining=None,
                                           drop_tip=True)
 
-    # pipette_left.distribute(30,
-    #                         reagents['A5'],
-    #                         [mag_plate[x].top(z=-1) for x in cols],
-    #                         touch_tip=True,
-    #                         disposal_volume=10,
-    #                         new_tip='once')
-
 
     # plate: primers i5
     # reagent tips 3
-    pipette_right.distribute(10,
-                             reagents['A5'],
-                             [mag_plate[x].top(z=-1) for x in cols],
-                             touch_tip=True,
-                             disposal_volume=10,
-                             new_tip='once')
+    pipette_right.transfer(10,
+                           reagents['A5'],
+                           [mag_plate[x].top(z=-1) for x in cols],
+                           touch_tip=True,
+                           new_tip='once')
 
 
     # plate: primers i7
-    pipette_right.transfer(10,
-                          [i7_primers[x] for x in cols],
-                          [mag_plate[x] for x in cols],
-                          mix_after=(5,10),
-                          touch_tip=True,
-                          new_tip='always',
-                          trash=True)
+    for col in cols:
+        pipette_right.pick_up_tip(tiprack_primers[col])
+        pipette_right.transfer(10,
+                               i7_primers[col],
+                               mag_plate[col],
+                               mix_after=(5, 10),
+                               touch_tip=True,
+                               new_tip='never',
+                               trash=False)
+        pipette_right.drop_tip()
 
     # Prompt user to remove plate and run on thermocycler
 
@@ -589,16 +619,16 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Add buffers for small-cut size selection to new plate
     # Add 15 µL SPRI beads
-    # reagent tips 4
-    pipette_right.pick_up_tip()
-    pipette_right.mix(10, 15, buffers['A5'])
-    pipette_right.transfer(15,
-                           buffers['A5'],
-                           [samples[x] for x in cols],
-                           mix_before=(2,10),
-                           touch_tip=True,
-                           new_tip='never') 
-    pipette_right.drop_tip()
+    # buffer tips 7
+    pipette_left.pick_up_tip()
+    pipette_left.mix(10, 100, buffers['A5'])
+    pipette_left.distribute(15,
+                            buffers['A5'],
+                            [samples[x] for x in cols],
+                            mix_before=(2,15),
+                            touch_tip=True,
+                            new_tip='never') 
+    pipette_left.drop_tip()
 
 
     # Transfer 125 µL large-cut supernatant to new plate
@@ -622,31 +652,6 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_mag)
 
     # ### Do first wash: 150 µL EtOH
-    # buffer tips 7
-    protocol.comment('Doing wash #1.')
-    eth_remaining, eth_wells = bead_wash(# global arguments
-                                         protocol,
-                                         magblock,
-                                         pipette_left,
-                                         mag_plate,
-                                         cols,
-                                         # super arguments
-                                         waste['A1'],
-                                         tiprack_wash,
-                                         # wash buffer arguments,
-                                         eth_wells,
-                                         14000/8,
-                                         # mix arguments
-                                         tiprack_wash,
-                                         # optional arguments
-                                         wash_vol=150,
-                                         super_vol=125,
-                                         drop_super_tip=False,
-                                         mix_n=wash_mix,
-                                         remaining=None)
-
-
-    # ### Do first wash: 150 µL EtOH
     # buffer tips 8
     protocol.comment('Doing wash #1.')
     eth_remaining, eth_wells = bead_wash(# global arguments
@@ -668,6 +673,33 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=125,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=140,
+                                         remaining=None)
+
+
+    # ### Do first wash: 150 µL EtOH
+    # buffer tips 9
+    protocol.comment('Doing wash #1.')
+    eth_remaining, eth_wells = bead_wash(# global arguments
+                                         protocol,
+                                         magblock,
+                                         pipette_left,
+                                         mag_plate,
+                                         cols,
+                                         # super arguments
+                                         waste['A1'],
+                                         tiprack_wash,
+                                         # wash buffer arguments,
+                                         eth_wells,
+                                         14000/8,
+                                         # mix arguments
+                                         tiprack_wash,
+                                         # optional arguments
+                                         wash_vol=150,
+                                         super_vol=125,
+                                         drop_super_tip=False,
+                                         mix_n=wash_mix,
+                                         mix_vol=140,
                                          remaining=eth_remaining)
 
 
