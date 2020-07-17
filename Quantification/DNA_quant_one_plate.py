@@ -1,5 +1,6 @@
 from opentrons import protocol_api
 from opentrons.protocols.types import APIVersion
+from numpy import ceil
 
 metadata = {
     'apiLevel': '2.5',
@@ -99,7 +100,7 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
                assay,
                cols,
                198,
-               reagents.wells_by_name()['A1','A2','A3','A4'],
+               [reagents[x] for x in ['A1','A2','A3','A4']],
                14000/8,
                tip=None,
                tip_vol=300,
@@ -110,8 +111,8 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
     # add 2 µL of each sample to each of the wells. Mix after dispensing. Dispose of these tips.
     
     pipette_right.transfer(2, 
-                           samples[cols], 
-                           assay[cols],
+                           [samples[x] for x in cols], 
+                           [assay[x] for x in cols],
                            mix_after=(5, 10),
                            touch_tip=True,
                            trash=False,

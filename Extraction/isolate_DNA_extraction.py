@@ -68,16 +68,23 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
+    vol_remaining = super_vol
     for col in cols:
-        # four transfers to remove supernatant:
+        # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         transfers = int(ceil(super_vol/190))
-        for i in range(0,transfers):
-            pipette.aspirate(190, 
-                             plate[col].bottom(z=(transfers+bottom_offset - 1)-i), 
+        while vol_remaining > 0:
+            transfer_vol = min(vol_remaining, 190)
+            if vol_remaining <= 190:
+                z_height = bottom_offset
+            else:
+                z_height = 4
+            pipette.aspirate(transfer_vol,
+                             plate[col].bottom(z=z_height),
                              rate=rate)
             pipette.air_gap(10)
-            pipette.dispense(200, waste.top())
+            pipette.dispense(transfer_vol + 10, waste.top())
+            vol_remaining -= transfer_vol
             pipette.blow_out()
         # we're done with these tips at this point
         if drop_tip:
@@ -85,7 +92,6 @@ def remove_supernatant(pipette,
         else:
             pipette.return_tip() 
     return()
-
 
 
 def add_buffer(pipette,

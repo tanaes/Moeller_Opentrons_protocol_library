@@ -1,5 +1,6 @@
 from opentrons import protocol_api
 from opentrons.protocols.types import APIVersion
+from numpy import ceil
 
 metadata = {
     'apiLevel': '2.2',
@@ -116,9 +117,9 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
         
     add_buffer(pipette_left,
                assay,
-               assay.cols(),
+               [x[0].name() for x in assay.columns()],
                38,
-               reagents.wells_by_name()['A1','A2','A3','A4'],
+               [reagents[x] for x in ['A1','A2','A3','A4']],
                14000/8,
                tip=None,
                tip_vol=300,
