@@ -5,12 +5,25 @@ from time import clock
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-# Define pause duration (seconds)
-pause_bind = 5*60
-pause_mag = 3*60
-pause_dry = 5*60
-pause_elute = 5*60
+test_run = False
 
+if test_run:
+    pause_bind = 5
+    pause_mag = 3
+    pause_dry = 5
+    pause_elute = 5
+
+    # Limit columns
+    cols = ['A1', 'A2']
+else:
+    pause_bind = 5*60
+    pause_mag = 3*60
+    pause_dry = 5*60
+    pause_elute = 5*60
+
+    # Limit columns
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # Define minimum tip height for beadbeating tubes
 min_height = 16
@@ -18,9 +31,6 @@ min_height = 16
 # define magnet engagement height for plates
 mag_engage_height = 6
 
-
-# Limit columns
-cols = ['A1']#, 'A2', 'A3', 'A4']
 
 # Isopropanol columns
 ipa_cols = ['A5', 'A6', 'A7', 'A8']
@@ -68,8 +78,9 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
-    vol_remaining = super_vol
+    
     for col in cols:
+        vol_remaining = super_vol
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         transfers = int(ceil(super_vol/190))
