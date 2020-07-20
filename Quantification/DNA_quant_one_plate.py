@@ -22,7 +22,8 @@ def add_buffer(pipette,
                tip=None,
                tip_vol=300,
                remaining=None,
-               drop_tip=True):
+               drop_tip=True,
+               dead_vol=0.05):
 
     
     if tip is not None:
@@ -50,10 +51,14 @@ def add_buffer(pipette,
 
             remaining -= transfer_vol
 
-            if remaining < transfer_vol + source_vol*0.1:
+            if remaining < transfer_vol + source_vol * dead_vol:
+
 #                 print("Only %s remaining in %s\n" % (remaining, source_well))
                 source_wells.pop(0)
-                source_well = source_wells[0]
+                try:
+                    source_well = source_wells[0]
+                except IndexError:
+                    print('Ran out of source wells!')
                 
 #                 print("Moving on to %s\n" % source_well)
                 remaining = source_vol
@@ -67,7 +72,8 @@ def add_buffer(pipette,
 
     return(remaining, source_wells)
 
-def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
+
+def run(protocol: protocol_api.ProtocolContext):
     
     # define deck positions and labware
     
@@ -76,7 +82,7 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
     tiprack_10f = protocol.load_labware('opentrons_96_filtertiprack_10ul', 2)
     
     # plates
-    reagents = protocol.load_labware('nest_12_reservoir_15ml', 6, 'reagents')
+    reagents = protocol.load_labware('usascientific_12_reservoir_22ml', 6, 'reagents')
     assay = protocol.load_labware('corning_96_wellplate_360ul_flat', 5, 'assay')
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 4, 'samples')
     
@@ -100,8 +106,8 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
                assay,
                cols,
                198,
-               [reagents[x] for x in ['A1','A2','A3','A4']],
-               14000/8,
+               [reagents[x] for x in ['A1','A2']],
+               22000/8,
                tip=None,
                tip_vol=300,
                remaining=None,
