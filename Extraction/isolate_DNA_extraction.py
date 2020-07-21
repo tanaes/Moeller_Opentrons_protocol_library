@@ -46,7 +46,7 @@ lys_cols = ['A1', 'A2', 'A3', 'A4']
 bead_flow = .25
 
 # wash mix mutliplier
-wash_mix = 5
+wash_mix = 10
 
 
 def bead_mix(pipette,
@@ -337,12 +337,11 @@ def run(protocol: protocol_api.ProtocolContext):
     # usascientific_96_wellplate_2.4ml_deep
     reagents = protocol.load_labware('nest_12_reservoir_15ml',
                                      9, 'reagents')
-    lysate = protocol.load_labware('usascientific_96_wellplate_2.4ml_deep',
+    lysate = protocol.load_labware('axygen_96_wellplate_1100ul',
                                    1, 'lysate')
 
     # load plate on magdeck
-    mag_plate = magblock.load_labware('usascientific_96_wellplate_2.4ml_deep')
-    # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
+    mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
 
     # initialize pipettes
     pipette_left = protocol.load_instrument('p300_multi', 
@@ -397,7 +396,7 @@ def run(protocol: protocol_api.ProtocolContext):
                      150, 
                      reagents.wells_by_name()['A1'].bottom(z=2))
 
-    pipette_left.distribute(20,
+    pipette_left.distribute(70,
                             reagents.wells_by_name()['A1'],
                             [mag_plate[x] for x in cols],
                             mix_before=(2, 20),
@@ -470,15 +469,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.blow_out()
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.mix(5, 250, mag_plate[col].bottom(z=1))
-        pipette_left.return_tip()
-
-
-    # mix again
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
         pipette_left.return_tip()
 
     # bind
@@ -486,10 +477,10 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_bind)
 
 
-    # mix again
+    # mix 
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 250, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
@@ -522,6 +513,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=700,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=250,
                                          remaining=ipa_remaining)
 
 
@@ -545,6 +537,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=250,
                                          remaining=None)
 
     # ### Do third wash
@@ -567,6 +560,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_vol=250,
                                          remaining=eth_remaining)
 
 
@@ -592,7 +586,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        waste['A1'],
                        super_vol=380,
                        rate=bead_flow,
-                       bottom_offset=.2,
+                       bottom_offset=.5,
                        drop_tip=True)
 
     # dry
