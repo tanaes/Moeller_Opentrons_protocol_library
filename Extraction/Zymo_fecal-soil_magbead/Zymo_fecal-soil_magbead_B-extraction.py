@@ -5,30 +5,45 @@ from time import clock
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-# Define pause duration (seconds)
-pause_bind = 5*60
-pause_mag = 3*60
-pause_dry = 20*60
-pause_elute = 5*60
+# Set to `True` to perform a short run, with brief pauses and only 
+# one column of samples
+test_run = True
+
+if test_run:
+    pause_bind = 5
+    pause_mag = 3
+    pause_dry = 5
+    pause_elute = 5
+
+    # Limit columns
+    cols = ['A1', 'A2']
+else:
+    pause_bind = 5*60
+    pause_mag = 3*60
+    pause_dry = 5*60
+    pause_elute = 5*60
+
+    # Limit columns
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # define magnet engagement height for plates
 mag_engage_height = 6
 
 
-# Limit columns
-cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
-        'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
+# MagBinding + beads cols
+mbb_cols = ['A1', 'A2', 'A3']
 
 # MagBinding cols
-mbb_cols = ['A1', 'A2', 'A3', 'A4',
-            'A5', 'A6', 'A7', 'A8']
+mbw_cols = ['A4', 'A5', 'A6']
+
 
 # Wash 1 columns
-w1_cols = ['A9', 'A10', 'A11', 'A12']
+w1_cols = ['A1', 'A2', 'A3']
 
 # Wash 2 columns
-w2_cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
-           'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
+w2_cols = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9',
+           'A10', 'A11', 'A12']
 
 # bead aspiration flow rate
 bead_flow = .25
@@ -69,8 +84,9 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
-    vol_remaining = super_vol
+    
     for col in cols:
+        vol_remaining = super_vol
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         transfers = int(ceil(super_vol/190))
@@ -259,9 +275,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # #### This follows the Bio-On-Magnetic_Beads protocol 7.1 for genomic DNA extraction. 
     # 
-    # Isolates should have been bead-beat in our strip tubes and spun down in the plate centrifuge. 
+    # Samples should have been bead-beaten in 2 mL screw-top tubes and then transferred
+    # to deep-well plates in the Zymoe_Magbead_A-tubes_to_96well.py protocol. 
     # 
     # Reagents needed:
+    # magbinding buffer: 1100 µL per sample / 
     # - reservoir plate with 15 mL lysis buffer in columns 1-4
     # - reservoir plate with 15 mL Isopropanol in columns 5-8
     # - reservoir plate with 15 mL 80% EtOH in columns 9-12
@@ -285,8 +303,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Setup
 
-    protocol.home()
-
 
     # define deck positions and labware
 
@@ -304,11 +320,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                          4)
 
     # plates
-    wash_buffers_1 = protocol.load_labware('nest_12_reservoir_15ml', 
+    wash_buffers = protocol.load_labware('usascientific_12_reservoir_22ml', 
                                          11, 'wash buffers')
-    wash_buffers_2 = protocol.load_labware('nest_12_reservoir_15ml', 
-                                         8, 'wash buffers')
-    reagents = protocol.load_labware('nest_12_reservoir_15ml',
+    reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
                                      9, 'reagents')
     eluate = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
                                    3, 'eluate')
@@ -324,14 +338,17 @@ def run(protocol: protocol_api.ProtocolContext):
                                             'left',
                                             tip_racks=[tiprack_buffers])
 
+    # MagBindingBuffer + beads wells
+    mbb_wells = [reagents[x] for x in mbb_cols]
+
     # MagBindingBuffer wells
-    mbb_wells = [wash_buffers_1[x] for x in mbb_cols]
+    mbw_wells = [reagents[x] for x in mbw_cols]
 
     # Wash 1 columns
-    w1_wells = [wash_buffers_1[x] for x in w1_cols]
+    w1_wells = [wash_buffers[x] for x in w1_cols]
 
     # Wash 2 columns
-    w2_wells = [wash_buffers_2[x] for x in w2_cols]
+    w2_wells = [wash_buffers[x] for x in w2_cols]
 
 
     # ### Prompt user to place plate on mag block
@@ -341,32 +358,28 @@ def run(protocol: protocol_api.ProtocolContext):
                    ' onto the magdeck in position 10.')
 
     # ### Add 600 µL MagBinding buffer
-
-    mbb_remaining, mbb_wells = add_buffer(pipette_left,
-                                          mag_plate,
-                                          cols,
-                                          600,
-                                          mbb_wells,
-                                          14000/8)
-
     # ### Add beads to plate
     protocol.comment('Adding beads to plate.')
+
 
     pipette_left.pick_up_tip()
 
     # mix beads
+    for col in mbb_cols:
+        
     pipette_left.mix(10, 
-                     150, 
+                     200, 
+                     reagents.wells_by_name()['A1'].bottom(z=2))
+    pipette_left.mix(10, 
+                     200, 
                      reagents.wells_by_name()['A1'].bottom(z=2))
 
-    pipette_left.distribute(25,
-                            reagents.wells_by_name()['A1'],
-                            [mag_plate[x] for x in cols],
-                            mix_before=(2, 20),
-                            touch_tip=False,
-                            disposal_volume=10,
-                            trash=True,
-                            new_tip='never')
+    mbb_remaining, mbb_wells = add_buffer(pipette_left,
+                                          mag_plate,
+                                          cols,
+                                          625,
+                                          mbb_wells,
+                                          21000/8)
 
     pipette_left.drop_tip()
     
@@ -411,7 +424,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments,
                                          mbb_wells,
-                                         14000/8,
+                                         21000/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
@@ -435,7 +448,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments
                                          w1_wells,
-                                         14000/8,
+                                         21000/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments,
@@ -458,7 +471,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments
                                          w2_wells,
-                                         14000/8,
+                                         21000/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments,
@@ -482,7 +495,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments
                                          w2_wells,
-                                         14000/8,
+                                         21000/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments,

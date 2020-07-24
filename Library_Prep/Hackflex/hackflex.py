@@ -79,8 +79,9 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
-    vol_remaining = super_vol
+    
     for col in cols:
+        vol_remaining = super_vol
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         transfers = int(ceil(super_vol/190))
@@ -103,7 +104,6 @@ def remove_supernatant(pipette,
         else:
             pipette.return_tip() 
     return()
-
 
 
 def add_buffer(pipette,
@@ -265,32 +265,21 @@ def bead_wash(# global arguments
 
 def run(protocol: protocol_api.ProtocolContext):
 
-    # # Magnetic DNA extraction protocol
-
-    # #### This follows the Bio-On-Magnetic_Beads protocol 7.1 for genomic DNA extraction. 
-    # 
-    # Isolates should have been bead-beat in our strip tubes and spun down in the plate centrifuge. 
-    # 
-    # Reagents needed:
-    # - reservoir plate with 15 mL lysis buffer in columns 1-4
-    # - reservoir plate with 15 mL Isopropanol in columns 5-8
-    # - reservoir plate with 15 mL 80% EtOH in columns 9-12
-    # - deep well plate with ≥300 µL beads in each well of column 1
-    # - deep well plate with 1 mL elution buffer in each well of column 2
+    # ### HackFlex Illumina-compatible library prep protocol
 
     # ### Deck
 
-    # 1. reagent strip tubes
+    # 1. samples; libraries
     # 2. reagent reservoir
-    # 3. waste
-    # 4. samples
+    # 3. reagent strip tubes
+    # 4. 300 tips (wash); 200f tips (elute)
     # 5. 10f tips (samples)
-    # 6. 300 tips (reagents)
-    # 7. 300 tips (wash)
-    # 8. 10f tips (primers)
-    # 9. i7 primers
+    # 6. i7 primers
+    # 7. waste
+    # 8. 300 tips (reagents)
+    # 9. 10f tips (primers)
     # 10. mag module
-    # 11. 
+    # 11. 20 tips (reagents)
     # 12. trash
 
     # define custom labware for strip tubes block
@@ -301,10 +290,15 @@ def run(protocol: protocol_api.ProtocolContext):
     # 4: PCR MM 200 µL
     # 5: PCR MM 200 µL
 
-    # reagent reservoirs:
+    # buffer reservoirs:
     # 1: TB1 (2.5 mL)
     # 2: TWB (10 mL)
     # 3: TWB (10 mL)
+    # 4: H2O (8 mL)
+    # 5: beads (6 mL)
+    # 6: 80% EtOH
+    # 7: 80% EtOH
+    # 8: 80% EtOH
 
     # ### Setup
 
@@ -321,28 +315,28 @@ def run(protocol: protocol_api.ProtocolContext):
     tiprack_samples = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
                                             5)
     tiprack_buffers = protocol.load_labware('opentrons_96_tiprack_300ul', 
-                                            6)
-    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul', 
-                                         7)
-    tiprack_primers = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
                                             8)
+    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul', 
+                                         4)
+    tiprack_primers = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
+                                            9)
     tiprack_reagents = protocol.load_labware('opentrons_96_tiprack_20ul', 
                                              11)
 
     # reagents
     # should be new custom labware with strip tubes
     reagents = protocol.load_labware('opentrons_96_aluminumblock_generic_pcr_strip_200ul',
-                                     1, 'reagents')
+                                     3, 'reagents')
     buffers = protocol.load_labware('nest_12_reservoir_15ml', 
                                     2, 'wash buffers')
     waste = protocol.load_labware('nest_1_reservoir_195ml',
-                                  3, 'liquid waste')
+                                  7, 'liquid waste')
 
     # plates
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                   4, 'samples')
+                                   1, 'samples')
     i7_primers = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                       9, 'i7 primers')
+                                       6, 'i7 primers')
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
@@ -419,6 +413,10 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # add TSB to each sample.
     # Prompt user to remove plate and run on thermocycler
+
+    ### Is this step going to cross-contaminate? Seems wasteful to take.
+    ### new tip for each sample. z = -1 meant to help.  
+
     # reagent tips 2
     pipette_right.transfer(10,
                            reagents['A2'],
@@ -560,9 +558,9 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # 
 
-    protocol.pause('Remove sample plate from position 4, seal, and store. '
+    protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well BioRad PCR plate in position'
-                   ' 4.')
+                   ' {0}.'.format(samples.parent))
 
     protocol.pause('Centrifuge sealed plate at 280 xg for one minute.'
                    ' Then unseal and return to magblock.')
@@ -609,8 +607,9 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.return_tip()
 
     protocol.pause('Remove and discard plate from mag block. '
-                   'Move plate in position 4 to mag block, and replace with'
-                   ' a new, clean 96-well BioRad PCR plate.')
+                   'Move plate in position {0} to mag block, and replace '
+                   'with a new, clean 96-well BioRad PCR plate.'.format(
+                    samples.parent))
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
@@ -644,8 +643,9 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.return_tip()
 
     protocol.pause('Remove and discard plate from mag block. '
-                   'Move plate in position 4 to mag block, and replace with'
-                   ' a new, clean 96-well BioRad PCR plate.')
+                   'Move plate in position {0} to mag block, and replace '
+                   'with a new, clean 96-well BioRad PCR plate.'.format(
+                    samples.parent))
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
@@ -732,8 +732,8 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_dry)
 
 
-    protocol.pause('Replace empty tiprack in position 7 with new rack of '
-                   '200 µL filter tips. ')
+    protocol.pause('Replace empty tiprack in position {0} with new rack of '
+                   '200 µL filter tips.'.format(tiprack_wash.parent))
 
 
     # ### Elute
