@@ -34,7 +34,7 @@ def run(protocol: protocol_api.ProtocolContext):
     tuberack_2 = protocol.load_labware(tuberack_labware, 2)
 
     # plates
-    samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+    samples = protocol.load_labware('vwr_96_wellplate_1000ul',
                                     3, 'samples')
 
     # initialize pipettes

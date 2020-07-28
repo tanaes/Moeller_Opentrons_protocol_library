@@ -51,7 +51,7 @@ def run(protocol: protocol_api.ProtocolContext):
                assay,
                cols,
                198,
-               21000/8,
+               13000/8,
                tip=None,
                tip_vol=300,
                remaining=None,

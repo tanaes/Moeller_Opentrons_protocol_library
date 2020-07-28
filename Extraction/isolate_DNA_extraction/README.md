@@ -2,6 +2,8 @@
 
 This protocol is derived from the Bio On Magnetic Beads protocol #7.1, "**BOMB gDNA extraction using GITC lysis.**" ([Oberacker et al 2019](Oberacker et al.(2019), Bio-On-Magnetic-Beads (BOMB): Open platform for high-throughput nucleic acid manipulation. PLOS Biology,17(1), https://doi.org/10.1371/journal.pbio.3000107)). It is adapted to use a bead-beating lysis step for efficient lysis of all cell types. 
 
+Approximate total run time: 3.5 hours
+
 
 ## Buffers and Reagents
 
@@ -80,3 +82,29 @@ Reservoir plates can be washed and reused.
 ### Deck layout
 
 ![isolate extraction deck layout](./deckmap_isolate_extraction.png)
+
+### Reagents
+
+- 9: Reagents (USA Scientific 22 mL reservoir plate)
+	- 1: Beads (3 mL)
+	- 2: Elution buffer (7 mL)
+- 11: Wash buffers (USA Scientific 22 mL reservoir plate)
+	- 1-4: Lysis buffer (18 mL/well)
+	- 5-8: Isopropanol (18 mL/well)
+	- 9-12: 80% Etahnol (18 mL/well)
+
+## Protocol
+
+Grow up single colonies of bacterial isolates in 800 µL of an appropriate liquid medium in 96-well 1.1 mL strip tubes. Spin down and remove supernatant. Optionally, freeze pellets until extraction.
+
+To the pellets, add ~ 400 µL 0.1 mm glass beads, using two cycles of the bead dispenser. Place uncapped tubes with beads loaded into position 1 of the OT-2 deck.
+
+Initiate protocol. Robot will add lysis buffer to stips, then pause. Remove the plate. (You can optionally press continue here, and the robot will begin adding reagents to the deep-well plate on the magdeck in position 10.)
+
+Cap strip tubes, label with a marker to ensure correct orientation and order, and beat on the BeadRuptor Elite for 2 cycles of 30 seconds at 6 m/s. 
+
+After shaking, ensure the plate with samples and beads has an equivalent balance, then centrifuge for 5 minutes at 3,500 x*g*.
+
+Uncap strips, place back in position 1 of the OT-2 deck, and press continue. 
+
+The remainder of the protocol is hands-off. 

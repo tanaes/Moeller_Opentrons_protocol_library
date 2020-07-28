@@ -91,8 +91,10 @@ def run(protocol: protocol_api.ProtocolContext):
     # tips
     tiprack_buffers = protocol.load_labware('opentrons_96_tiprack_300ul',
                                             8)
-    tiprack_elution = protocol.load_labware('opentrons_96_filtertiprack_200ul',
-                                            6)
+    tiprack_elution_1 = protocol.load_labware(
+                            'opentrons_96_filtertiprack_200ul', 5)
+    tiprack_elution_2 = protocol.load_labware(
+                            'opentrons_96_filtertiprack_200ul', 6)
     tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul',
                                          4)
 
@@ -162,7 +164,7 @@ def run(protocol: protocol_api.ProtocolContext):
                      150,
                      reagents.wells_by_name()['A1'].bottom(z=2))
 
-    pipette_left.distribute(70,
+    pipette_left.distribute(20,
                             reagents.wells_by_name()['A1'],
                             [mag_plate[x] for x in cols],
                             mix_before=(2, 20),
@@ -375,7 +377,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # add elution buffer and mix
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution.wells_by_name()[col])
+        pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
         pipette_left.aspirate(50, reagents['A2'], rate=1)
         pipette_left.dispense(50, mag_plate[col].bottom(z=1))
         pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
@@ -391,12 +393,12 @@ def run(protocol: protocol_api.ProtocolContext):
     # t_mix = 0
     # while t_mix < pause_elute():
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution.wells_by_name()[col])
+        pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
         pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
         pipette_left.touch_tip()
         # we'll use these same tips for final transfer
-        pipette_left.return_tip()
+        pipette_left.drop_tip()
         # t_mix = clock() - t0
 
     # bind to magnet
@@ -408,7 +410,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.comment('Transferring eluted DNA to final plate.')
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution.wells_by_name()[col])
+        pipette_left.pick_up_tip(tiprack_elution_2.wells_by_name()[col])
         pipette_left.aspirate(50,
                               mag_plate[col].bottom(z=2),
                               rate=bead_flow)

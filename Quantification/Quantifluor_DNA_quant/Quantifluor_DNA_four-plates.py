@@ -3,7 +3,7 @@ from opentrons.protocols.types import APIVersion
 from opentrons_functions.transfer import add_buffer, get_96_from_384_wells
 
 metadata = {
-    'apiLevel': '2.2',
+    'apiLevel': '2.5',
     'author': 'Jon Sanders'}
 
 
@@ -24,7 +24,8 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
                     for x in [1, 4, 7, 10]]
 
     # plates
-    reagents = protocol.load_labware('nest_12_reservoir_15ml', 3, 'reagents')
+    reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
+                                     3, 'reagents')
     assay = protocol.load_labware('corning_384_wellplate_112ul_flat',
                                   9, 'assay')
 
@@ -46,11 +47,11 @@ def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
     # replace it in the rack.
 
     add_buffer(pipette_left,
-               [reagents[x] for x in ['A1', 'A2', 'A3', 'A4']],
+               [reagents[x] for x in ['A1', 'A2']],
                assay,
                cols,
                38,
-               14000/8,
+               13000/8,
                tip=None,
                tip_vol=300,
                remaining=None,
