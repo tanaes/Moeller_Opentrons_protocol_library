@@ -14,7 +14,8 @@ install:
 before_script:
   - export DISPLAY=:99.0
 script:
-  - bash Tests/*.sh
+  - cd Tests
+  - bash *.sh
 notifications:
   webhooks:
     on_success: change
