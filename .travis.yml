@@ -11,11 +11,15 @@ os:
   # - osx
 install:
   - pip install -r ci/pip_requirements.txt
+  - git submodule add https://github.com/sstephenson/bats Tests/libs/bats
+  - echo PATH=$PATH:`pwd`/Tests/libs/bats/bin
 before_script:
   - export DISPLAY=:99.0
 script:
   - cd Tests
-  - bash *.sh
+  - bats test_Quantification.bats
+  - bats test_Extraction.bats
+  - bats test_Library_Prep.bats
 notifications:
   webhooks:
     on_success: change
