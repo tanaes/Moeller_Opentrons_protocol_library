@@ -1,0 +1,22 @@
+# Check on http://lint.travis-ci.org/ after modifying it!
+
+language: python
+python:
+  - "3.7"
+arch:
+  - amd64
+  # - arm64
+os:
+  - linux
+  # - osx
+install:
+  - pip install -r ci/pip_requirements.txt
+before_script:
+  - export DISPLAY=:99.0
+script:
+  - bash Tests/*.sh
+notifications:
+  webhooks:
+    on_success: change
+    on_failure: always
+after_success:
