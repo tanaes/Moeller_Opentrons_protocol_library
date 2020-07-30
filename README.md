@@ -1,16 +1,12 @@
 # Moeller Lab OpenTrons Protocol Library	
 This is an ongoing collection of OpenTrons protocols from our lab, focused on automating inexpensive and high-throughput DNA extractions and library preps for bacterial genomes and metagenomes. 
 
-These protocols are all written in Python using the OpenTrons ProtocolAPI. Additionally, they depend on this functions library for scripting certain convenience functions. 
+These protocols are all written in Python using the OpenTrons ProtocolAPI. Additionally, they depend on [this functions library](https://github.com/tanaes/opentrons_functions) for scripting certain convenience functions. 
 
 
 ## Installation
 
-The only installation necessary is to install the opentrons_functions library on the OT-2 robot. To do this, follow the instructions in [Setting up SSH access to your OT-2](https://support.opentrons.com/en/articles/3203681) to connect to the robot via SSH, then install the libary:
-
-```{bash}
-pip install git+https://github.com/tanaes/opentrons_functions.git
-```
+The only installation necessary is to install the [opentrons_functions](https://github.com/tanaes/opentrons_functions) library on the OT-2 robot.
 
 ## Modification and Testing
 
@@ -33,7 +29,7 @@ pip install opentrons
 pip install git+https://github.com/tanaes/opentrons_functions.git 
 ```
 
-Now, you can execute the tests using the BAT shell test package (this is cloned automatically into the Tests folder). Each collection of protocols has its own test script.
+Now, you can execute the tests using the [Bats shell test package](https://github.com/sstephenson/bats) (this is cloned automatically into the Tests folder). Each collection of protocols has its own test script.
 
 ```{bash}
 cd Tests
@@ -41,4 +37,4 @@ cd Tests
 .libs/bats/bin/bats test_Extraction.bats
 .libs/bats/bin/bats test_Library_Prep.bats
 ```
-If the test exit successfully, the scripts should be interpretable by the OT-2. 
+If the tests exit successfully, the scripts should be interpretable by the OT-2. 
