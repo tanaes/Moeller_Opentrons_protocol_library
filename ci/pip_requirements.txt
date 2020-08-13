@@ -1,2 +1,3 @@
 opentrons==3.19.0
+requests
 git+https://github.com/tanaes/opentrons_functions.git@dev
