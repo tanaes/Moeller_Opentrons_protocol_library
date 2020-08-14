@@ -12,7 +12,7 @@ os:
 install:
   - pip install -r ci/pip_requirements.txt
   # - git submodule add https://github.com/sstephenson/bats Tests/libs/bats
-  - echo PATH=$PATH:`pwd`/Tests/libs/bats/bin
+  - export PATH=$PATH:`pwd`/Tests/libs/bats/bin
 before_script:
   - export DISPLAY=:99.0
 script:
