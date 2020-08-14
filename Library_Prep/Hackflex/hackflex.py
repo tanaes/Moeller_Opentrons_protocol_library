@@ -1,5 +1,8 @@
 from opentrons import protocol_api
-from numpy import ceil
+from opentrons_functions.magbeads import (
+    remove_supernatant, bead_wash, transfer_elute)
+from opentrons_functions.transfer import add_buffer
+
 
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
@@ -42,226 +45,6 @@ pcr_cols = ['A4', 'A5']
 # EtOH columns
 eth_cols = ['A6', 'A7', 'A8']
 
-# define magnet engagement height for plates
-mag_engage_height = 6
-
-
-
-def bead_mix(pipette,
-             plate,
-             cols,
-             tiprack,
-             n=5,
-             mix_vol=200,
-             drop_tip=False):
-    for col in cols:
-        pipette.pick_up_tip(tiprack.wells_by_name()[col])
-        pipette.mix(n, 
-                    mix_vol,
-                    plate[col].bottom(z=2))
-        pipette.blow_out(plate[col].top())
-
-        if drop_tip:
-            pipette.drop_tip()
-        else:
-            pipette.return_tip()
-    return()
-
-
-def remove_supernatant(pipette,
-                       plate,
-                       cols,
-                       tiprack,
-                       waste,
-                       super_vol=600,
-                       rate=0.25,
-                       bottom_offset=2,
-                       drop_tip=False):
-
-    # remove supernatant
-    
-    for col in cols:
-        vol_remaining = super_vol
-        # transfers to remove supernatant:
-        pipette.pick_up_tip(tiprack.wells_by_name()[col])
-        transfers = int(ceil(super_vol/190))
-        while vol_remaining > 0:
-            transfer_vol = min(vol_remaining, 190)
-            if vol_remaining <= 190:
-                z_height = bottom_offset
-            else:
-                z_height = 4
-            pipette.aspirate(transfer_vol,
-                             plate[col].bottom(z=z_height),
-                             rate=rate)
-            pipette.air_gap(10)
-            pipette.dispense(transfer_vol + 10, waste.top())
-            vol_remaining -= transfer_vol
-            pipette.blow_out()
-        # we're done with these tips at this point
-        if drop_tip:
-            pipette.drop_tip()
-        else:
-            pipette.return_tip() 
-    return()
-
-
-def add_buffer(pipette,
-               plate,
-               cols,
-               wash_vol,
-               source_wells,
-               source_vol,
-               tip=None,
-               tip_vol=300,
-               remaining=None,
-               drop_tip=True):
-
-    
-    if tip is not None:
-        pipette.pick_up_tip(tip)
-    else:
-        pipette.pick_up_tip()
-
-
-    source_well = source_wells[0]
-    if remaining is None:
-        remaining = source_vol
-
-    transfers = int(ceil(wash_vol/(tip_vol-10)))
-    transfer_vol = wash_vol/transfers
-
-    for col in cols:
-        for i in range(0,transfers):
-#             print("%s µL remaining in %s" % (remaining, source_well))
-#             print("Transferring %s to %s" % (transfer_vol, col))
-            pipette.aspirate(transfer_vol, 
-                             source_well)
-            pipette.air_gap(10)
-            pipette.dispense(transfer_vol + 10, 
-                             plate[col].top())
-
-            remaining -= transfer_vol
-
-            if remaining < transfer_vol + source_vol*0.1:
-#                 print("Only %s remaining in %s\n" % (remaining, source_well))
-                source_wells.pop(0)
-                source_well = source_wells[0]
-                
-#                 print("Moving on to %s\n" % source_well)
-                remaining = source_vol
-
-        pipette.blow_out()
-
-    if drop_tip:
-        pipette.drop_tip()
-    else:
-        pipette.return_tip() 
-
-    return(remaining, source_wells)
-
-
-def bead_wash(# global arguments
-              protocol,
-              magblock,
-              pipette,
-              plate,
-              cols,
-              # super arguments
-              super_waste,
-              super_tiprack,
-              # wash buffer arguments
-              source_wells,
-              source_vol,
-              # mix arguments
-              mix_tiprack,
-              # optional arguments
-              super_vol=600,
-              rate=bead_flow,
-              super_bottom_offset=2,
-              drop_super_tip=True,
-              wash_vol=300,
-              remaining=None,
-              wash_tip=None,
-              drop_wash_tip=True,
-              mix_vol=200,
-              mix_n=wash_mix,
-              drop_mix_tip=False,
-              mag_engage_height=mag_engage_height,
-              pause_s=pause_mag
-              ):
-    # Wash
-
-    # This should:
-    # - pick up tip from position 7
-    # - pick up 190 µL from the mag plate
-    # - air gap
-    # - dispense into position 11
-    # - repeat x 
-    # - trash tip
-    # - move to next column
-    # - disengage magnet
-
-    # remove supernatant
-    remove_supernatant(pipette,
-                       plate,
-                       cols,
-                       super_tiprack,
-                       super_waste,
-                       super_vol=super_vol,
-                       rate=bead_flow,
-                       bottom_offset=super_bottom_offset,
-                       drop_tip=drop_super_tip)
-        
-    # disengage magnet
-    magblock.disengage()
-
-
-    # This should:
-    # - Pick up tips from column 3 of location 2
-    # - pick up isopropanol from position 5 column 3
-    # - dispense to `cols` in mag plate
-    # - pick up isopropanol from position 5 column 4
-    # - dispense to `cols` in mag plate
-    # - drop tips at end
-
-    # add isopropanol
-
-    wash_wells, wash_remaining = add_buffer(pipette,
-                                            plate,
-                                            cols,
-                                            wash_vol=wash_vol,
-                                            source_wells=source_wells,
-                                            source_vol=source_vol,
-                                            tip=wash_tip,
-                                            remaining=remaining,
-                                            drop_tip=drop_wash_tip)
-
-
-    # This should:
-    # - grab a tip from position 8
-    # - mix 5 times the corresponding well on mag plate
-    # - blow out
-    # - return tip
-    # - do next col
-    # - engage magnet
-
-    # mix
-    bead_mix(pipette,
-             plate,
-             cols,
-             mix_tiprack,
-             n=mix_n,
-             mix_vol=mix_vol,
-             drop_tip=drop_mix_tip)
-
-    # engage magnet
-    magblock.engage(height_from_base=mag_engage_height)
-
-    protocol.delay(seconds=pause_s)
-
-    return(wash_wells, wash_remaining)
-
 
 def run(protocol: protocol_api.ProtocolContext):
 
@@ -301,9 +84,6 @@ def run(protocol: protocol_api.ProtocolContext):
     # 8: 80% EtOH
 
     # ### Setup
-
-    protocol.home()
-
 
     # define deck positions and labware
 
@@ -397,7 +177,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                samples[col],
                                mag_plate[col],
-                               mix_after=(5, 10),
+                               mix_after=(2, 10),
                                new_tip='never',
                                trash=False)
         pipette_right.return_tip()
@@ -437,7 +217,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # bind for specified length of time
 
     protocol.comment('Binding beads to magnet.')
-    magblock.engage(height_from_base=mag_engage_height)
+    magblock.engage()
 
     protocol.delay(seconds=pause_mag)
 
@@ -466,7 +246,6 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mix_n=wash_mix,
                                          mix_vol=90,
                                          remaining=None)
-
 
 
     # ### Do second wash: 100 µL TWB
@@ -502,25 +281,26 @@ def run(protocol: protocol_api.ProtocolContext):
                        waste['A1'],
                        super_vol=120,
                        rate=bead_flow,
-                       bottom_offset=.5,
+                       bottom_offset=.8,
                        drop_tip=False)
 
     magblock.disengage()
-
+    # remove supernatant
     # Step 3: amplification
     # MM: 3 mL; 350 (400 µL) per tip
     # buffer tips 4
 
     pcr_wells, pcr_remaining = add_buffer(pipette_left,
+                                          pcr_wells,
                                           mag_plate,
                                           cols,
                                           30,
-                                          pcr_wells,
                                           200,
                                           tip=None,
                                           tip_vol=300,
                                           remaining=None,
-                                          drop_tip=True)
+                                          drop_tip=True,
+                                          dead_vol=10)
 
 
     # plate: primers i5
@@ -566,7 +346,7 @@ def run(protocol: protocol_api.ProtocolContext):
                    ' Then unseal and return to magblock.')
 
     protocol.comment('Binding beads to magnet.')
-    magblock.engage(height_from_base=mag_engage_height)
+    magblock.engage()
 
 
     # Add buffers for large-cut size selection to new plate
@@ -596,15 +376,18 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Transfer 45 µL PCR supernatant to new plate
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.transfer(45,
-                             [mag_plate[x] for x in cols],
-                             [samples[x] for x in cols],
-                             mix_after=(10, 100),
-                             touch_tip=True,
-                             new_tip='never',
-                             trash=False)
-        pipette_left.return_tip()
+        transfer_elute(pipette_left,
+                       mag_plate,
+                       samples,
+                       cols,
+                       tiprack_wash,
+                       45,
+                       z_offset=0.5,
+                       x_offset=1,
+                       rate=0.25,
+                       drop_tip=False,
+                       mix_n=5,
+                       mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
@@ -612,7 +395,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')
-    magblock.engage(height_from_base=mag_engage_height)
+    magblock.engage()
     protocol.delay(seconds=pause_mag)
 
 
@@ -632,15 +415,18 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Transfer 125 µL large-cut supernatant to new plate
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.transfer(125,
-                             [mag_plate[x] for x in cols],
-                             [samples[x] for x in cols],
-                             mix_after=(10, 100),
-                             touch_tip=True,
-                             new_tip='never',
-                             trash=False)
-        pipette_left.return_tip()
+        transfer_elute(pipette_left,
+                       mag_plate,
+                       samples,
+                       cols,
+                       tiprack_wash,
+                       125,
+                       z_offset=0.5,
+                       x_offset=1,
+                       rate=0.25,
+                       drop_tip=False,
+                       mix_n=5,
+                       mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
@@ -648,7 +434,7 @@ def run(protocol: protocol_api.ProtocolContext):
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')
-    magblock.engage(height_from_base=mag_engage_height)
+    magblock.engage()
     protocol.delay(seconds=pause_mag)
 
     # ### Do first wash: 150 µL EtOH
@@ -783,20 +569,21 @@ def run(protocol: protocol_api.ProtocolContext):
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
 
-    magblock.engage(height_from_base=mag_engage_height)
+    magblock.engage()
 
     protocol.delay(seconds=pause_mag)
 
     protocol.comment('Transferring eluted DNA to final plate.')
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.aspirate(32, 
-                              mag_plate[col].bottom(z=2),
-                              rate=bead_flow)
-        pipette_left.dispense(32, samples[col])
-        pipette_left.blow_out(samples[col].top())
-        pipette_left.touch_tip()
-        # we're done with these tips now
-        pipette_left.drop_tip()
+        transfer_elute(pipette_left,
+               mag_plate,
+               samples,
+               cols,
+               tiprack_wash,
+               32,
+               z_offset=0.5,
+               x_offset=1,
+               rate=0.25,
+               drop_tip=True)
 
     magblock.disengage()
