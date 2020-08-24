@@ -105,7 +105,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # reagents
     # should be new custom labware with strip tubes
-    reagents = protocol.load_labware('opentrons_96_aluminumblock_generic_pcr_strip_200ul',
+    reagents = protocol.load_labware('tubeblockvwrpcrstriptube_96_wellplate_250ul',
                                      3, 'reagents')
     buffers = protocol.load_labware('nest_12_reservoir_15ml', 
                                     2, 'wash buffers')
