@@ -201,7 +201,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents['A2'],
                            [mag_plate[x].top(z=-1) for x in cols],
-                           touch_tip=True,
+                           touch_tip=False,
                            new_tip='once')
 
     protocol.pause('Remove plate from magblock, seal, vortex, and run '
@@ -245,7 +245,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=90,
-                                         remaining=None)
+                                         remaining=None,
+                                         pause_s=pause_mag)
 
 
     # ### Do second wash: 100 µL TWB
@@ -271,7 +272,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=90,
-                                         remaining=twb_remaining)
+                                         remaining=twb_remaining,
+                                         pause_s=pause_mag)
 
     # remove supernatant
     remove_supernatant(pipette_left,
@@ -340,14 +342,14 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well BioRad PCR plate in position'
+                   'Centrifuge sealed plate at 280 xg for one minute.'
+                   ' Then unseal and return to magblock.'
                    ' {0}.'.format(samples.parent))
-
-    protocol.pause('Centrifuge sealed plate at 280 xg for one minute.'
-                   ' Then unseal and return to magblock.')
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage()
 
+    protocol.delay(seconds=pause_mag)
 
     # Add buffers for large-cut size selection to new plate
     protocol.comment('Preparing large-cut bead conditions in new plate.')

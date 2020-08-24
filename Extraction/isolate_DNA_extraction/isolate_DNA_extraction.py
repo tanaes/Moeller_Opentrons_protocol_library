@@ -279,7 +279,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          wash_tip_vol=300,
                                          super_tip_vol=200,
                                          remaining=ipa_remaining,
-                                         mag_engage_height=mag_engage_height)
+                                         mag_engage_height=mag_engage_height,
+                                         pause_s=pause_mag)
 
     # ### Do second wash
     protocol.comment('Doing wash #2.')
@@ -306,7 +307,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          wash_tip_vol=300,
                                          super_tip_vol=200,
                                          remaining=None,
-                                         mag_engage_height=mag_engage_height)
+                                         mag_engage_height=mag_engage_height,
+                                         pause_s=pause_mag)
 
     # ### Do third wash
     protocol.comment('Doing wash #3.')
@@ -333,7 +335,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          wash_tip_vol=300,
                                          super_tip_vol=200,
                                          remaining=eth_remaining,
-                                         mag_engage_height=mag_engage_height)
+                                         mag_engage_height=mag_engage_height,
+                                         pause_s=pause_mag)
 
     # ### Dry
     protocol.comment('Removing wash and drying beads.')
