@@ -67,17 +67,17 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Deck
 
-    # 1. deep well plate (empty)
-    # 2. 300 µL tips - buffer transfer
+    # 1. Lysate
+    # 2. empty
     # 3. PCR plate (final samples)
-    # 4. Lysate
-    # 5. reservoir plate (wash buffers)
+    # 4. 200 µL filter tips - bead washes
+    # 5. 200 µL filter tips - elution
     # 6. 200 µL filter tips - final transfer
-    # 7. 200 µL filter tips - lysate transfer
-    # 8. 300 µL tips - bead washes
-    # 9. empty
-    # 10. deep well plate (reagents)
-    # 11. mag module
+    # 7. 195 µL reservoir (liquid waste)
+    # 8. 300 µL tips - buffers
+    # 9. 22 mL USA Scientific reservoir (reagents)
+    # 10. mag module w/ 1 mL VWR deep well plate
+    # 11. 22 mL USA  Scientific reservoir (wash buffers)
     # 12. trash
 
     # ### Setup
@@ -105,7 +105,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                    3, 'eluate')
     waste = protocol.load_labware('nest_1_reservoir_195ml',
                                   7, 'liquid waste')
-    reagents = protocol.load_labware('nest_12_reservoir_15ml',
+    reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
                                      9, 'reagents')
     lysate = protocol.load_labware('axygen_96_wellplate_1100ul',
                                    1, 'lysate')
@@ -129,7 +129,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Prompt user to place cells with beads loaded on position 4
     protocol.pause('Add lysis beads to strip tubes containing dry cell pellet'
-                   ' and place on position 4 for addition of lysis buffer.')
+                   ' and place on position 1 for addition of lysis buffer.')
 
     # ### Add lysis buffer
     add_buffer(pipette_left,
@@ -140,13 +140,13 @@ def run(protocol: protocol_api.ProtocolContext):
                18000/8)
 
     # ### Prompt user to remove plate
-    protocol.pause('Remove plate from position 4. \n\n'
+    protocol.pause('Remove plate from position 1. \n\n'
                    'Cap tubes in tube plate and beadbeat for required time. '
-                   'Then spin down, uncap, and return to position 4. \n\n'
+                   'Then spin down, uncap, and return to position 1. \n\n'
                    'Press continue to start filling plate on mag deck during '
                    'this time. There will be another pause after plate is '
                    'filled to allow you to return strip tube plate to '
-                   'position 4 before continuing.')
+                   'position 1 before continuing.')
 
     # ### Add beads to new plate
     protocol.comment('Adding beads to wash plate.')
@@ -195,7 +195,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                           tip_vol=300)
 
     protocol.pause('Decap and return spun-down strip tube plate to position '
-                   '4. \n\nPress continue when ready.')
+                   '1. \n\nPress continue when ready.')
 
     # ### Transfer lysate to new plate
 
