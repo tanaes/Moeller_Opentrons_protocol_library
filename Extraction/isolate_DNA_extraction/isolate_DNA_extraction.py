@@ -1,6 +1,6 @@
 from opentrons import protocol_api
 from opentrons_functions.magbeads import (
-    remove_supernatant, bead_wash)
+    remove_supernatant, bead_wash, transfer_elute)
 from opentrons_functions.transfer import add_buffer
 
 metadata = {'apiLevel': '2.5',
@@ -27,7 +27,7 @@ else:
             'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # Define minimum tip height for beadbeating tubes
-min_height = 16
+min_height = 18
 
 # define magnet engagement height for plates
 mag_engage_height = 6
@@ -95,7 +95,7 @@ def run(protocol: protocol_api.ProtocolContext):
                             'opentrons_96_filtertiprack_200ul', 5)
     tiprack_elution_2 = protocol.load_labware(
                             'opentrons_96_filtertiprack_200ul', 6)
-    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul',
+    tiprack_wash = protocol.load_labware('opentrons_96_filtertiprack_200ul',
                                          4)
 
     # plates
@@ -191,7 +191,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                           mag_plate,
                                           cols,
                                           300,
-                                          18000/8)
+                                          18000/8,
+                                          tip_vol=300)
 
     protocol.pause('Decap and return spun-down strip tube plate to position '
                    '4. \n\nPress continue when ready.')
@@ -226,12 +227,12 @@ def run(protocol: protocol_api.ProtocolContext):
         # do second transfer.
         pipette_left.aspirate(180,
                               lysate[col].bottom(z=min_height),
-                              rate=0.25)
+                              rate=0.1)
         pipette_left.air_gap(10)
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
         pipette_left.blow_out()
         pipette_left.touch_tip(v_offset=-1)
-        pipette_left.mix(5, 250, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.return_tip()
 
@@ -242,7 +243,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(5, 250, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
@@ -274,7 +275,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=700,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
-                                         mix_vol=250,
+                                         mix_vol=200,
+                                         wash_tip_vol=300,
+                                         super_tip_vol=200,
                                          remaining=ipa_remaining,
                                          mag_engage_height=mag_engage_height)
 
@@ -299,7 +302,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
-                                         mix_vol=250,
+                                         mix_vol=200,
+                                         wash_tip_vol=300,
+                                         super_tip_vol=200,
                                          remaining=None,
                                          mag_engage_height=mag_engage_height)
 
@@ -324,7 +329,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
-                                         mix_vol=250,
+                                         mix_vol=200,
+                                         wash_tip_vol=300,
+                                         super_tip_vol=200,
                                          remaining=eth_remaining,
                                          mag_engage_height=mag_engage_height)
 
@@ -346,6 +353,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        tiprack_wash,
                        waste['A1'],
                        super_vol=380,
+                       tip_vol=200,
                        rate=bead_flow,
                        bottom_offset=.5,
                        drop_tip=True)
@@ -409,15 +417,18 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_mag)
 
     protocol.comment('Transferring eluted DNA to final plate.')
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution_2.wells_by_name()[col])
-        pipette_left.aspirate(50,
-                              mag_plate[col].bottom(z=2),
-                              rate=bead_flow)
-        pipette_left.dispense(50, eluate[col])
-        pipette_left.blow_out(eluate[col].top())
-        pipette_left.touch_tip()
-        # we're done with these tips now
-        pipette_left.drop_tip()
+
+    transfer_elute(pipette_left,
+                   mag_plate,
+                   eluate,
+                   cols,
+                   tiprack_elution_2,
+                   50,
+                   z_offset=0.5,
+                   x_offset=1,
+                   rate=0.25,
+                   drop_tip=True,
+                   mix_n=None,
+                   mix_vol=None)
 
     magblock.disengage()
