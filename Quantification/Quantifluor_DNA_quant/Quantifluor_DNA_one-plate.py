@@ -13,6 +13,7 @@ api_version = APIVersion(2, 5)
 cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
         'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
+trash_tips = True
 
 def run(protocol: protocol_api.ProtocolContext):
 
@@ -55,7 +56,7 @@ def run(protocol: protocol_api.ProtocolContext):
                tip=None,
                tip_vol=300,
                remaining=None,
-               drop_tip=False)
+               drop_tip=trash_tips)
 
     # add 2 µL of each sample to each of the wells. Mix after dispensing.
     # Dispose of these tips.
@@ -64,5 +65,5 @@ def run(protocol: protocol_api.ProtocolContext):
                            [assay[x] for x in cols],
                            mix_after=(5, 10),
                            touch_tip=True,
-                           trash=False,
+                           trash=trash_tips,
                            new_tip='always')
