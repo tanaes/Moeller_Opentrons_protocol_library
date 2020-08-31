@@ -36,14 +36,29 @@ bead_flow = .25
 # wash mix mutliplier
 wash_mix = 5
 
-# Wash 1 (TWB) columns
-twb_cols = ['A3', 'A4']
+tb1_cols = ['A1', 'A2']
+
+blt_col = 'A3'
+
+tsb_col = 'A4'
+
+i5_col = 'A5'
 
 # PCR MM columns
-pcr_cols = ['A4', 'A5']
+pcr_cols = ['A6', 'A7']
+
+
+
+
+# Wash 1 (TWB) columns
+twb_cols = ['A1', 'A2']
+
+h2o_col = ['A3']
+
+beads_col = ['A4']
 
 # EtOH columns
-eth_cols = ['A6', 'A7', 'A8']
+eth_cols = ['A5', 'A6', 'A7']
 
 
 def run(protocol: protocol_api.ProtocolContext):
@@ -67,21 +82,22 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # define custom labware for strip tubes block
     # reagent strip tubes:
-    # 1: BLT 150 µL
-    # 2: TSB 150 µL
-    # 3: i5 primers 150 µL
-    # 4: PCR MM 200 µL
-    # 5: PCR MM 200 µL
+    # 1: TB1 200 µL
+    # 2: TB1 200 µL
+    # 3: BLT 150 µL
+    # 4: TSB 150 µL
+    # 5: i5 primers 150 µL
+    # 6: PCR MM 200 µL
+    # 7: PCR MM 200 µL
 
     # buffer reservoirs:
-    # 1: TB1 (2.5 mL)
+    # 1: TWB (10 mL)
     # 2: TWB (10 mL)
-    # 3: TWB (10 mL)
-    # 4: H2O (8 mL)
-    # 5: beads (6 mL)
+    # 3: H2O (8 mL)
+    # 4: beads (6 mL)
+    # 5: 80% EtOH
     # 6: 80% EtOH
     # 7: 80% EtOH
-    # 8: 80% EtOH
 
     # ### Setup
 
@@ -130,6 +146,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                             'right',
                                             tip_racks=[tiprack_reagents])
 
+    # TB2 wells
+    tb1_wells = [buffers[x] for x in tb1_cols]
+
     # TWB wash wells
     twb_wells = [buffers[x] for x in twb_cols]
 
@@ -148,13 +167,19 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # add TB1.
     # buffer tips 1
-    pipette_left.distribute(25,
-                            buffers['A1'],
-                            [mag_plate[x] for x in cols],
-                            touch_tip=False,
-                            disposal_volume=10,
-                            new_tip='once',
-                            trash=True)
+
+    tb1_wells, tb1_remaining = add_buffer(pipette_left,
+                                          tb1_wells,
+                                          mag_plate,
+                                          cols,
+                                          25,
+                                          200,
+                                          tip=None,
+                                          tip_vol=300,
+                                          remaining=None,
+                                          drop_tip=True,
+                                          dead_vol=10)
+
     # add BLT
     # reagent tips 2
 
@@ -162,9 +187,9 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.pick_up_tip()
     pipette_right.mix(10,
                       10,
-                      reagents['A1'])
+                      reagents[blt_col])
     pipette_right.transfer(10,
-                           reagents['A1'],
+                           reagents[blt_col],
                            [mag_plate[x] for x in cols],
                            mix_before=(2,10),
                            new_tip='never')
@@ -199,7 +224,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # reagent tips 2
     pipette_right.transfer(10,
-                           reagents['A2'],
+                           reagents[tsb_col],
                            [mag_plate[x].top(z=-1) for x in cols],
                            touch_tip=False,
                            new_tip='once')
@@ -308,7 +333,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # plate: primers i5
     # reagent tips 3
     pipette_right.transfer(10,
-                           reagents['A5'],
+                           reagents[i5_col],
                            [mag_plate[x].top(z=-1) for x in cols],
                            touch_tip=True,
                            new_tip='once')
@@ -357,7 +382,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # add 40 µL H2O
     # buffer tips 5
     pipette_left.distribute(40,
-                            buffers['A4'],
+                            buffers[h2o_col],
                             [samples[x] for x in cols],
                             touch_tip=True,
                             disposal_volume=10,
@@ -366,9 +391,9 @@ def run(protocol: protocol_api.ProtocolContext):
     # Add 45 µL SPRI beads
     # buffer tips 6
     pipette_left.pick_up_tip()
-    pipette_left.mix(10, 200, buffers['A5'])
+    pipette_left.mix(10, 200, buffers[beads_col])
     pipette_left.distribute(45,
-                            buffers['A5'],
+                            buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,40),
                             touch_tip=True,
@@ -405,9 +430,9 @@ def run(protocol: protocol_api.ProtocolContext):
     # Add 15 µL SPRI beads
     # buffer tips 7
     pipette_left.pick_up_tip()
-    pipette_left.mix(10, 100, buffers['A5'])
+    pipette_left.mix(10, 100, buffers[beads_col])
     pipette_left.distribute(15,
-                            buffers['A5'],
+                            buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,15),
                             touch_tip=True,
@@ -551,7 +576,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # add elution buffer and mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.aspirate(32, buffers['A4'], rate=1)
+        pipette_left.aspirate(32, buffers[h2o_col], rate=1)
         pipette_left.dispense(32, mag_plate[col].bottom(z=1))
         pipette_left.mix(10, 25, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
