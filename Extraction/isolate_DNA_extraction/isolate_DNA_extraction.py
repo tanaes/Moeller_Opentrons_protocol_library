@@ -11,7 +11,7 @@ test_run = False
 if test_run:
     pause_bind = 5
     pause_mag = 3
-    pause_dry = 5
+    pause_dry = 7
     pause_elute = 5
 
     # Limit columns
