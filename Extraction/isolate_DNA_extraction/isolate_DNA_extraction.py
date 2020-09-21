@@ -27,7 +27,7 @@ else:
             'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # Define minimum tip height for beadbeating tubes
-min_height = 18
+min_height = 14
 
 # define magnet engagement height for plates
 mag_engage_height = 6
