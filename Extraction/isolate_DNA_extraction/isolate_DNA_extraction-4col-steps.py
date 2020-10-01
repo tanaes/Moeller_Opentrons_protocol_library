@@ -248,6 +248,9 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip()
         pipette_left.return_tip()
 
+    protocal.pause('Remove first column and bind by hand for test.')
+    cols = ['A2', 'A3', 'A4']
+    
     # bind for specified length of time
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
@@ -255,8 +258,6 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_mag)
 
 
-    protocal.pause('Remove first column and bind by hand for test.')
-    cols = ['A2', 'A3', 'A4']
     # ### Do first wash
     protocol.comment('Doing wash #1.')
     ipa_remaining, ipa_wells = bead_wash(
