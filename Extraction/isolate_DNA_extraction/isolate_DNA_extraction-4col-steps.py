@@ -248,8 +248,8 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip()
         pipette_left.return_tip()
 
-    protocal.pause('Remove first column and bind by hand for test.')
-    cols = ['A2', 'A3', 'A4']
+    protocol.pause('Remove first column and bind by hand for test.')
+    cols.pop(0)
     
     # bind for specified length of time
     protocol.comment('Binding beads to magnet.')
@@ -286,8 +286,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mag_engage_height=mag_engage_height,
                                          pause_s=pause_mag)
 
-    protocal.pause('Remove second column and bind by hand for test.')
-    cols = ['A3', 'A4']
+    protocol.pause('Remove second column and bind by hand for test.')
+    cols.pop(0)
     # ### Do second wash
     protocol.comment('Doing wash #2.')
     eth_remaining, eth_wells = bead_wash(
@@ -315,8 +315,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          remaining=None,
                                          mag_engage_height=mag_engage_height,
                                          pause_s=pause_mag)
-    protocal.pause('Remove third column and bind by hand for test.')
-    cols = ['A4']
+    protocol.pause('Remove third column and bind by hand for test.')
+    cols.pop(0)
     # ### Do third wash
     protocol.comment('Doing wash #3.')
     eth_remaining, eth_wells = bead_wash(
