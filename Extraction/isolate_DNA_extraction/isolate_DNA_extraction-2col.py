@@ -230,7 +230,8 @@ def run(protocol: protocol_api.ProtocolContext):
                               rate=0.25)
         pipette_left.air_gap(10)
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
-        pipette_left.blow_out()
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
+        pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
