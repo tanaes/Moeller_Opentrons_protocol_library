@@ -17,7 +17,7 @@ if test_run:
     # Limit columns
     cols = ['A1', 'A2']
 else:
-    pause_bind = 5*60
+    pause_bind = 15*60
     pause_mag = 5*60
     pause_dry = 7*60
     pause_elute = 5*60
@@ -251,7 +251,7 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=pause_mag)
+    protocol.delay(seconds=20*60)
 
     # remove supernatant
 
@@ -314,7 +314,7 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=pause_mag)
+    protocol.delay(seconds=20*60)
 
     # ### Do first wash
     protocol.comment('Doing wash #1.')
