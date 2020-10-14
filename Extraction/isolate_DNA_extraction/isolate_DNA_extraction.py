@@ -184,26 +184,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     pipette_left.drop_tip()
 
-    # ### Add 1/2 of isopropanol
-    protocol.comment('Adding isopropanol to wash plate.')
-
-    # This should:
-    # - Pick up tips from column 2 of location 2
-    # - pick up isopropanol from position 5 column 1
-    # - dispense to `cols` in position 1
-    # - pick up isopropanol from position 5 column 2
-    # - dispense to `cols` in position 1
-    # - return tip at end
-
-    ipa_remaining, ipa_wells = add_buffer(pipette_left,
-                                          ipa_wells,
-                                          mag_plate,
-                                          cols,
-                                          ipa_vol/2,
-                                          ipa_fill/8,
-                                          tip_vol=300,
-                                          drop_tip=True)
-
     protocol.pause('Decap and return spun-down strip tube plate to position '
                    '1. \n\nPress continue when ready.')
 
@@ -235,9 +215,25 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
-    # bind
-    protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind)
+    # ### Add 1/2 of isopropanol
+    protocol.comment('Adding isopropanol to wash plate.')
+
+    # This should:
+    # - Pick up tips from column 2 of location 2
+    # - pick up isopropanol from position 5 column 1
+    # - dispense to `cols` in position 1
+    # - pick up isopropanol from position 5 column 2
+    # - dispense to `cols` in position 1
+    # - return tip at end
+
+    ipa_remaining, ipa_wells = add_buffer(pipette_left,
+                                          ipa_wells,
+                                          mag_plate,
+                                          cols,
+                                          ipa_vol/2,
+                                          ipa_fill/8,
+                                          tip_vol=300,
+                                          drop_tip=True)
 
     # mix
     for col in cols:
@@ -246,6 +242,11 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
+
+    # bind
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind)
+
 
     # bind for specified length of time
     protocol.comment('Binding beads to magnet.')
@@ -268,17 +269,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Add second half of lysate
 
-    # ### Add 1/2 of isopropanol
-    protocol.comment('Adding isopropanol to wash plate.')
-
-    ipa_remaining, ipa_wells = add_buffer(pipette_left,
-                                          ipa_wells,
-                                          mag_plate,
-                                          cols,
-                                          ipa_vol/2,
-                                          ipa_fill/8,
-                                          remaining=ipa_remaining,
-                                          tip_vol=300)
 
     # ### Transfer 1/2 of lysate to new plate
 
@@ -298,9 +288,17 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
-    # bind
-    protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind)
+    # ### Add 1/2 of isopropanol
+    protocol.comment('Adding isopropanol to wash plate.')
+
+    ipa_remaining, ipa_wells = add_buffer(pipette_left,
+                                          ipa_wells,
+                                          mag_plate,
+                                          cols,
+                                          ipa_vol/2,
+                                          ipa_fill/8,
+                                          remaining=ipa_remaining,
+                                          tip_vol=300)
 
     # mix
     for col in cols:
@@ -309,6 +307,10 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
+
+    # bind
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind)
 
     # bind for specified length of time
     protocol.comment('Binding beads to magnet.')
@@ -372,33 +374,33 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mag_engage_height=mag_engage_height,
                                          pause_s=pause_mag)
 
-    # ### Do third wash
-    protocol.comment('Doing wash #3.')
-    eth_remaining, eth_wells = bead_wash(
-                                         # global arguments
-                                         protocol,
-                                         magblock,
-                                         pipette_left,
-                                         mag_plate,
-                                         cols,
-                                         # super arguments
-                                         waste['A1'],
-                                         tiprack_wash,
-                                         # wash buffer arguments
-                                         eth_wells,
-                                         eth_fill/8,
-                                         # mix arguments
-                                         tiprack_wash,
-                                         # optional arguments,
-                                         super_vol=300,
-                                         drop_super_tip=False,
-                                         mix_n=wash_mix,
-                                         mix_vol=200,
-                                         wash_tip_vol=300,
-                                         super_tip_vol=200,
-                                         remaining=eth_remaining,
-                                         mag_engage_height=mag_engage_height,
-                                         pause_s=pause_mag)
+    # # ### Do third wash
+    # protocol.comment('Doing wash #3.')
+    # eth_remaining, eth_wells = bead_wash(
+    #                                      # global arguments
+    #                                      protocol,
+    #                                      magblock,
+    #                                      pipette_left,
+    #                                      mag_plate,
+    #                                      cols,
+    #                                      # super arguments
+    #                                      waste['A1'],
+    #                                      tiprack_wash,
+    #                                      # wash buffer arguments
+    #                                      eth_wells,
+    #                                      eth_fill/8,
+    #                                      # mix arguments
+    #                                      tiprack_wash,
+    #                                      # optional arguments,
+    #                                      super_vol=300,
+    #                                      drop_super_tip=False,
+    #                                      mix_n=wash_mix,
+    #                                      mix_vol=200,
+    #                                      wash_tip_vol=300,
+    #                                      super_tip_vol=200,
+    #                                      remaining=eth_remaining,
+    #                                      mag_engage_height=mag_engage_height,
+    #                                      pause_s=pause_mag)
 
     # ### Dry
     protocol.comment('Removing wash and drying beads.')
