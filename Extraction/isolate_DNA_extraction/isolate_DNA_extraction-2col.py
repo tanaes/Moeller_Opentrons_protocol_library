@@ -252,7 +252,7 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=20*60)
+    protocol.delay(seconds=pause_mag)
 
     # remove supernatant
 
@@ -269,7 +269,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Add second half of lysate
 
-
+    magblock.disengage()
     # ### Transfer 1/2 of lysate to new plate
 
     protocol.comment('Transferring lysate to wash plate.')
@@ -316,7 +316,7 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=20*60)
+    protocol.delay(seconds=pause_mag)
 
     # ### Do first wash
     protocol.comment('Doing wash #1.')
