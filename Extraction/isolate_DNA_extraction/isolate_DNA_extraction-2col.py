@@ -6,10 +6,10 @@ from opentrons_functions.transfer import add_buffer
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-test_run = True
+test_run = False
 
 if test_run:
-    pause_bind = 5*60
+    pause_bind = 15*60
     pause_mag = 5*60
     pause_dry = 7*60
     pause_elute = 5*60
@@ -238,7 +238,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=7))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
@@ -270,7 +270,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Add second half of lysate
 
     magblock.disengage()
-    # ### Transfer 1/2 of lysate to new plate
+    # ### Transfer 2/2 of lysate to new plate
 
     protocol.comment('Transferring lysate to wash plate.')
 
@@ -288,7 +288,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
-    # ### Add 1/2 of isopropanol
+    # ### Add 2/2 of isopropanol
     protocol.comment('Adding isopropanol to wash plate.')
 
     ipa_remaining, ipa_wells = add_buffer(pipette_left,
@@ -303,7 +303,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=7))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip()
         pipette_left.return_tip()
