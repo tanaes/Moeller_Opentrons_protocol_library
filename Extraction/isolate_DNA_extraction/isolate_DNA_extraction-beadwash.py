@@ -6,7 +6,7 @@ from opentrons_functions.transfer import add_buffer
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-test_run = False
+test_run = True
 
 if test_run:
     pause_bind = 5*60
