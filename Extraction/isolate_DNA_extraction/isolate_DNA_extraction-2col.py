@@ -9,7 +9,7 @@ metadata = {'apiLevel': '2.5',
 test_run = True
 
 if test_run:
-    pause_bind = 15*60
+    pause_bind = 5*60
     pause_mag = 5*60
     pause_dry = 7*60
     pause_elute = 5*60
@@ -17,7 +17,7 @@ if test_run:
     # Limit columns
     cols = ['A1', 'A2']
 else:
-    pause_bind = 15*60
+    pause_bind = 5*60
     pause_mag = 5*60
     pause_dry = 7*60
     pause_elute = 5*60
@@ -32,14 +32,14 @@ min_height = 14
 # define magnet engagement height for plates
 mag_engage_height = 6
 
-# Isopropanol columns
-ipa_cols = ['A5', 'A6', 'A7', 'A8']
+# Binding buffer columns
+bind_cols = ['A5', 'A6', 'A7']
 
-# Isopropanol binding volume
-ipa_vol = 400
+# Binding buffer binding volume
+bind_vol = 360
 
 # Isopropanol fill volume
-ipa_fill = 20000
+bind_fill = 15000
 
 # Ethanol columns
 eth_cols = ['A9', 'A10', 'A11', 'A12']
@@ -68,11 +68,12 @@ def run(protocol: protocol_api.ProtocolContext):
     # the plate centrifuge.
     #
     # Reagents needed:
-    # - reservoir plate with 15 mL lysis buffer in columns 1-4
-    # - reservoir plate with 15 mL Isopropanol in columns 5-8
-    # - reservoir plate with 15 mL 80% EtOH in columns 9-12
-    # - deep well plate with ≥300 µL beads in each well of column 1
-    # - deep well plate with 1 mL elution buffer in each well of column 2
+    # - reservoir plate with 18 mL lysis buffer in columns 1-4
+    # - reservoir plate with 18 mL binding buffer + beads in columns 5-7
+    # - reservoir plate with 6 mL elution buffer in column 8
+    # - reservoir plate with 18 mL 80% EtOH in columns 9-12
+
+    # Add 1:20 beads to binding buffer 
 
     # ### Deck
 
@@ -84,9 +85,8 @@ def run(protocol: protocol_api.ProtocolContext):
     # 6. 200 µL filter tips - final transfer
     # 7. 195 µL reservoir (liquid waste)
     # 8. 300 µL tips - buffers
-    # 9. 22 mL USA Scientific reservoir (reagents)
+    # 9. 22 mL USA Scientific reservoir (buffers)
     # 10. mag module w/ 1 mL VWR deep well plate
-    # 11. 22 mL USA  Scientific reservoir (wash buffers)
     # 12. trash
 
     # ### Setup
@@ -108,14 +108,14 @@ def run(protocol: protocol_api.ProtocolContext):
                                          4)
 
     # plates
-    wash_buffers = protocol.load_labware('usascientific_12_reservoir_22ml',
-                                         11, 'wash buffers')
+    buffers = protocol.load_labware('usascientific_12_reservoir_22ml',
+                                    9, 'wash buffers')
     eluate = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
                                    3, 'eluate')
     waste = protocol.load_labware('nest_1_reservoir_195ml',
                                   7, 'liquid waste')
-    reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
-                                     9, 'reagents')
+    # reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
+    #                                  9, 'reagents')
     lysate = protocol.load_labware('axygen_96_wellplate_1100ul',
                                    1, 'lysate')
 
@@ -128,13 +128,13 @@ def run(protocol: protocol_api.ProtocolContext):
                                             tip_racks=[tiprack_buffers])
 
     # Lysis buffer wells
-    lys_wells = [wash_buffers[x] for x in lys_cols]
+    lys_wells = [buffers[x] for x in lys_cols]
 
     # Isopropanol wells
-    ipa_wells = [wash_buffers[x] for x in ipa_cols]
+    bind_wells = [buffers[x] for x in bind_cols]
 
     # Ethanol columns
-    eth_wells = [wash_buffers[x] for x in eth_cols]
+    eth_wells = [buffers[x] for x in eth_cols]
 
     # ### Prompt user to place cells with beads loaded on position 4
     protocol.pause('Add lysis beads to strip tubes containing dry cell pellet'
@@ -160,29 +160,15 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Add beads to new plate
     protocol.comment('Adding beads to wash plate.')
 
-    # This should:
-    # - pick up a tip from location 2
-    # - pick up reagents from column 1 of location 9
-    # - distribute 20 µL to each column from `cols` in location 1.
-    # - trash tip
-
-    pipette_left.pick_up_tip()
-
-    # mix beads
-    pipette_left.mix(10,
-                     150,
-                     reagents.wells_by_name()['A1'].bottom(z=2))
-
-    pipette_left.distribute(20,
-                            reagents.wells_by_name()['A1'],
-                            [mag_plate[x] for x in cols],
-                            mix_before=(2, 20),
-                            touch_tip=False,
-                            disposal_volume=10,
-                            trash=True,
-                            new_tip='never')
-
-    pipette_left.drop_tip()
+    bind_remaining, bind_wells = add_buffer(pipette_left,
+                                            bind_wells,
+                                            mag_plate,
+                                            cols,
+                                            bind_vol/2,
+                                            bind_fill/8,
+                                            tip_vol=300,
+                                            pre_mix=5,
+                                            drop_tip=True)
 
     protocol.pause('Decap and return spun-down strip tube plate to position '
                    '1. \n\nPress continue when ready.')
@@ -210,49 +196,20 @@ def run(protocol: protocol_api.ProtocolContext):
                               rate=0.25)
         pipette_left.air_gap(10)
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
+        pipette_left.mix(5, 200, mag_plate[col].bottom(z=8))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip(v_offset=-1)
-        pipette_left.return_tip()
-
-    # ### Add 1/2 of isopropanol
-    protocol.comment('Adding isopropanol to wash plate.')
-
-    # This should:
-    # - Pick up tips from column 2 of location 2
-    # - pick up isopropanol from position 5 column 1
-    # - dispense to `cols` in position 1
-    # - pick up isopropanol from position 5 column 2
-    # - dispense to `cols` in position 1
-    # - return tip at end
-
-    ipa_remaining, ipa_wells = add_buffer(pipette_left,
-                                          ipa_wells,
-                                          mag_plate,
-                                          cols,
-                                          ipa_vol/2,
-                                          ipa_fill/8,
-                                          tip_vol=300,
-                                          drop_tip=True)
-
-    # mix
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=7))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
         pipette_left.return_tip()
 
     # bind
     protocol.comment('Binding DNA to beads.')
     protocol.delay(seconds=pause_bind)
 
-
     # bind for specified length of time
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=pause_mag)
+    protocol.delay(seconds=2*pause_mag)
 
     # remove supernatant
 
@@ -270,6 +227,21 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Add second half of lysate
 
     magblock.disengage()
+
+    # ### Add 2/2 of beads
+    protocol.comment('Adding beads to wash plate.')
+
+    bind_remaining, bind_wells = add_buffer(pipette_left,
+                                            bind_wells,
+                                            mag_plate,
+                                            cols,
+                                            bind_vol/2,
+                                            bind_fill/8,
+                                            remaining=bind_remaining,
+                                            tip_vol=300,
+                                            pre_mix=5,
+                                            drop_tip=True)
+
     # ### Transfer 2/2 of lysate to new plate
 
     protocol.comment('Transferring lysate to wash plate.')
@@ -288,26 +260,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
-    # ### Add 2/2 of isopropanol
-    protocol.comment('Adding isopropanol to wash plate.')
-
-    ipa_remaining, ipa_wells = add_buffer(pipette_left,
-                                          ipa_wells,
-                                          mag_plate,
-                                          cols,
-                                          ipa_vol/2,
-                                          ipa_fill/8,
-                                          remaining=ipa_remaining,
-                                          tip_vol=300)
-
-    # mix
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=7))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
-        pipette_left.return_tip()
-
     # bind
     protocol.comment('Binding DNA to beads.')
     protocol.delay(seconds=pause_bind)
@@ -316,11 +268,11 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
 
-    protocol.delay(seconds=pause_mag)
+    protocol.delay(seconds=2*pause_mag)
 
     # ### Do first wash
     protocol.comment('Doing wash #1.')
-    ipa_remaining, ipa_wells = bead_wash(
+    eth_remaining, eth_wells = bead_wash(
                                          # global arguments
                                          protocol,
                                          magblock,
@@ -331,18 +283,18 @@ def run(protocol: protocol_api.ProtocolContext):
                                          waste['A1'],
                                          tiprack_wash,
                                          # wash buffer arguments
-                                         ipa_wells,
-                                         ipa_fill/8,
+                                         eth_wells,
+                                         eth_fill/8,
                                          # mix arguments
                                          tiprack_wash,
-                                         # optional arguments
-                                         super_vol=380,
+                                         # optional arguments,
+                                         super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=200,
                                          wash_tip_vol=300,
                                          super_tip_vol=200,
-                                         remaining=ipa_remaining,
+                                         remaining=None,
                                          mag_engage_height=mag_engage_height,
                                          pause_s=pause_mag)
 
@@ -370,37 +322,9 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mix_vol=200,
                                          wash_tip_vol=300,
                                          super_tip_vol=200,
-                                         remaining=None,
+                                         remaining=eth_remaining,
                                          mag_engage_height=mag_engage_height,
                                          pause_s=pause_mag)
-
-    # # ### Do third wash
-    # protocol.comment('Doing wash #3.')
-    # eth_remaining, eth_wells = bead_wash(
-    #                                      # global arguments
-    #                                      protocol,
-    #                                      magblock,
-    #                                      pipette_left,
-    #                                      mag_plate,
-    #                                      cols,
-    #                                      # super arguments
-    #                                      waste['A1'],
-    #                                      tiprack_wash,
-    #                                      # wash buffer arguments
-    #                                      eth_wells,
-    #                                      eth_fill/8,
-    #                                      # mix arguments
-    #                                      tiprack_wash,
-    #                                      # optional arguments,
-    #                                      super_vol=300,
-    #                                      drop_super_tip=False,
-    #                                      mix_n=wash_mix,
-    #                                      mix_vol=200,
-    #                                      wash_tip_vol=300,
-    #                                      super_tip_vol=200,
-    #                                      remaining=eth_remaining,
-    #                                      mag_engage_height=mag_engage_height,
-    #                                      pause_s=pause_mag)
 
     # ### Dry
     protocol.comment('Removing wash and drying beads.')
@@ -453,7 +377,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # add elution buffer and mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
-        pipette_left.aspirate(50, reagents['A2'], rate=1)
+        pipette_left.aspirate(50, buffers['A8'], rate=1)
         pipette_left.dispense(50, mag_plate[col].bottom(z=1))
         pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
