@@ -80,16 +80,10 @@ def run(protocol: protocol_api.ProtocolContext):
     # define deck positions and labware
 
     # define hardware modules
-    try:
-        magblock = protocol.load_module('magnetic module', 10)
+    magblock = protocol.load_module('magnetic module', 10)
 
-        # define magnet engagement height for plates
-        mag_engage_height = 4
-    except RuntimeError:
-        magblock = protocol.load_module('magnetic module gen2', 10)
-
-        # define magnet engagement height for plates
-        mag_engage_height = 7.5
+    # define magnet engagement height for plates
+    mag_engage_height = 7.5
 
     magblock.disengage()
 
