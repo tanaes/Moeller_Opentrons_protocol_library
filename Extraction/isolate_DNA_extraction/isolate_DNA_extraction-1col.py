@@ -33,13 +33,13 @@ min_height = 14
 mag_engage_height = 7.5
 
 # Binding buffer columns
-bind_cols = ['A5', 'A6', 'A7']
+bind_cols = ['A5', 'A6']
 
 # Binding buffer binding volume
 bind_vol = 320
 
-# Isopropanol fill volume
-bind_fill = 15000
+# Binding buffer fill volume
+bind_fill = 18000
 
 # Ethanol columns
 eth_cols = ['A9', 'A10', 'A11', 'A12']
@@ -69,7 +69,7 @@ def run(protocol: protocol_api.ProtocolContext):
     #
     # Reagents needed:
     # - reservoir plate with 18 mL lysis buffer in columns 1-4
-    # - reservoir plate with 18 mL binding buffer + beads in columns 5-7
+    # - reservoir plate with 18 mL binding buffer + beads in columns 5-6
     # - reservoir plate with 6 mL elution buffer in column 8
     # - reservoir plate with 18 mL 80% EtOH in columns 9-12
 

@@ -12,34 +12,23 @@ This is a combination of the standard TE buffer and the lysis buffer from the or
 
 For 1L stock:
 
- - 298.5 g GITC
- - 35.3 mL Tris HCl, pH 8 (1M stock solution)
- - 12.6 g Sarkosyl
- - 26 mL EDTA (0.5M stock solution)
- - 632 µL Antifoam A
+ - 95.53 g Guanidine HCl
+ - 33.3 mL 10X TE buffer, pH 8 (10X stock solution)
+ - 20 mL 10% Sarkosyl solution
 
 Adjust pH with HCl to 7.6-8.0. 380 µL needed per sample; 40 mL per extraction plate.
  
  
-### Carboxyl-coated paramagnetic beads
+### Silica-coated paramagnetic beads
 
-The BOMB publication includes instructions for lab-made paramagnetic beads. For convenience, we use [SpeedBeads (GE45152105050250)](https://www.sigmaaldrich.com/catalog/product/sigma/ge45152105050250?lang=en&region=US) from GE Healthcare. These need to be washed and diluted prior to use.
-
-To prepare 50 mL working stock:
-
-- vortex mix beads
-- transfer 1 mL to 1.5 mL tube
-- pellet beads on magnetic rack
-- wash 2X with TE buffer
-- resuspend in 1 mL TE buffer
-- transfer to 50 mL conical tube and add TE to 50 mL
+Currently using MagBinding Beads (product number [D4100](https://www.zymoresearch.com/products/magbinding-beads)) from ZymoResearch.
 
 20 µL needed per sample; 2.5 mL per extraction plate.
 
 
 ### Isopropanol
 
-720 µL per sample, 75 mL per extraction plate.
+320 µL per sample, 30 mL per extraction plate.
 
 ### 80% Ethanol
 
@@ -85,12 +74,12 @@ Reservoir plates can be washed and reused.
 
 ### Reagents
 
-- 9: Reagents (USA Scientific 22 mL reservoir plate)
-	- 1: Beads (3 mL)
-	- 2: Elution buffer (7 mL)
-- 11: Wash buffers (USA Scientific 22 mL reservoir plate)
+Just before setup, make up binding buffer by adding 2 mL MagBinding Beads to 34 mL Isopropyl Alcohol. 
+
+- 11: Wash buffers and reagents (USA Scientific 22 mL reservoir plate)
 	- 1-4: Lysis buffer (18 mL/well)
-	- 5-8: Isopropanol (18 mL/well)
+	- 5-6: Binding buffer (18 mL/well)
+	- 8: Elution buffer (6 mL)
 	- 9-12: 80% Etahnol (18 mL/well)
 
 ## Protocol
