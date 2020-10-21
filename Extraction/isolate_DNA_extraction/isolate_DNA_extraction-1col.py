@@ -6,7 +6,7 @@ from opentrons_functions.transfer import add_buffer
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-test_run = False
+test_run = True
 
 if test_run:
     pause_bind = 5*60
@@ -15,7 +15,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1', 'A2']
+    cols = ['A1']
 else:
     pause_bind = 5*60
     pause_mag = 5*60

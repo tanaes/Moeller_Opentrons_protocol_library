@@ -30,13 +30,13 @@ else:
 min_height = 14
 
 # define magnet engagement height for plates
-mag_engage_height = 6
+mag_engage_height = 7.5
 
 # Binding buffer columns
 bind_cols = ['A5', 'A6', 'A7']
 
 # Binding buffer binding volume
-bind_vol = 360
+bind_vol = 320
 
 # Isopropanol fill volume
 bind_fill = 15000
@@ -196,7 +196,7 @@ def run(protocol: protocol_api.ProtocolContext):
                               rate=0.25)
         pipette_left.air_gap(10)
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=8))
+        pipette_left.mix(10, 200, mag_plate[col].bottom(z=8))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
@@ -255,7 +255,7 @@ def run(protocol: protocol_api.ProtocolContext):
                               rate=0.1)
         pipette_left.air_gap(10)
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
-        pipette_left.mix(5, 200, mag_plate[col].bottom(z=1))
+        pipette_left.mix(10, 200, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
         pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
@@ -288,6 +288,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments,
+                                         resuspend_beads=False,
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
@@ -316,6 +317,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments,
+                                         resuspend_beads=False,
                                          super_vol=300,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
