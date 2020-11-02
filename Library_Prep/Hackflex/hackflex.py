@@ -53,9 +53,9 @@ pcr_cols = ['A6', 'A7']
 # Wash 1 (TWB) columns
 twb_cols = ['A1', 'A2']
 
-h2o_col = ['A3']
+h2o_col = 'A3'
 
-beads_col = ['A4']
+beads_col = 'A4'
 
 # EtOH columns
 eth_cols = ['A5', 'A6', 'A7']
@@ -383,7 +383,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # buffer tips 5
     pipette_left.distribute(40,
                             buffers[h2o_col],
-                            [samples[x] for x in cols],
+                            [samples[x].top(z=-1) for x in cols],
                             touch_tip=True,
                             disposal_volume=10,
                             new_tip='once') 
@@ -394,7 +394,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.mix(10, 200, buffers[beads_col])
     pipette_left.distribute(45,
                             buffers[beads_col],
-                            [samples[x] for x in cols],
+                            [samples[x].top(z=-1) for x in cols],
                             mix_before=(2,40),
                             touch_tip=True,
                             disposal_volume=10,
