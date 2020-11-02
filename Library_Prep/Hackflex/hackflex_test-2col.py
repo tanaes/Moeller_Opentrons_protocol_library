@@ -73,11 +73,11 @@ def run(protocol: protocol_api.ProtocolContext):
     # 4. 300 tips (wash); 200f tips (elute)
     # 5. 10f tips (samples)
     # 6. i7 primers
-    # 7. waste
+    # 7. 20 tips (reagents)
     # 8. 300 tips (reagents)
     # 9. 10f tips (primers)
     # 10. mag module
-    # 11. 20 tips (reagents)
+    # 11. waste
     # 12. trash
 
     # define custom labware for strip tubes block
@@ -117,7 +117,7 @@ def run(protocol: protocol_api.ProtocolContext):
     tiprack_primers = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
                                             9)
     tiprack_reagents = protocol.load_labware('opentrons_96_tiprack_20ul', 
-                                             11)
+                                             7)
 
     # reagents
     # should be new custom labware with strip tubes
@@ -126,7 +126,7 @@ def run(protocol: protocol_api.ProtocolContext):
     buffers = protocol.load_labware('nest_12_reservoir_15ml', 
                                     2, 'wash buffers')
     waste = protocol.load_labware('nest_1_reservoir_195ml',
-                                  7, 'liquid waste')
+                                  11, 'liquid waste')
 
     # plates
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
