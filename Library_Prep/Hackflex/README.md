@@ -92,16 +92,16 @@ Reservoir plates can be washed and reused.
 ### Reagents
 
 - 2: Buffers (Nest 15 mL reservoir plate)
-	- 1: Tagmentation Buffer (2.5 mL)
-	- 2-3: TWB (10 mL/well)
-	- 4: H2O (8 mL)
-	- 5: Ampure-compatible beads (6 mL)
-	- 6-8: 80% Etahnol (14 mL/well)
+	- 1-2: TWB (10 mL/well)
+	- 3: H2O (8 mL)
+	- 4: Ampure-compatible beads (6 mL)
+	- 5-7: 80% Etahnol (14 mL/well)
 - 3: Reagents (VWR PCR strip tubes in tube block)
-	- 1: 1:40 diluted BLT beads (150 µL/tube)
-	- 2: TSB (150 µL/tube)
-	- 3: i5 primers (150 µL/tube)
-	- 4-5: PCR Master Mix (200 µL/tube)
+	- 1-2: TB1 (200 µL/tube)
+	- 3: 1:40 diluted BLT beads (150 µL/tube)
+	- 4: TSB (150 µL/tube)
+	- 5: i5 primers (150 µL/tube)
+	- 6-7: PCR Master Mix (200 µL/tube)
 
 ## Protocol
 
