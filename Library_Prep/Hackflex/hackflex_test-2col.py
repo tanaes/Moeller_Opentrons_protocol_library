@@ -53,7 +53,7 @@ pcr_cols = ['A6', 'A7']
 # Wash 1 (TWB) columns
 twb_cols = ['A1', 'A2']
 
-twb_fill = 18000
+twb_fill = 10000
 
 h2o_col = 'A3'
 
@@ -62,6 +62,7 @@ beads_col = 'A4'
 # EtOH columns
 eth_cols = ['A5', 'A6', 'A7']
 
+eth_fill = 12000
 
 def run(protocol: protocol_api.ProtocolContext):
 
@@ -492,7 +493,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments,
                                          eth_wells,
-                                         14000/8,
+                                         eth_fill/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
@@ -519,7 +520,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # wash buffer arguments,
                                          eth_wells,
-                                         14000/8,
+                                         eth_fill/8,
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
