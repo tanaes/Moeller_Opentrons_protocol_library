@@ -53,6 +53,8 @@ pcr_cols = ['A6', 'A7']
 # Wash 1 (TWB) columns
 twb_cols = ['A1', 'A2']
 
+twb_fill = 18000
+
 h2o_col = 'A3'
 
 beads_col = 'A4'
@@ -147,7 +149,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                             tip_racks=[tiprack_reagents])
 
     # TB1 wells
-    tb1_wells = [buffers[x] for x in tb1_cols]
+    tb1_wells = [reagents[x] for x in tb1_cols]
 
     # TWB wash wells
     twb_wells = [buffers[x] for x in twb_cols]
@@ -249,8 +251,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Do first wash: 100 µL TWB
     # buffer tips 2
+
+    # ### Do first wash
     protocol.comment('Doing wash #1.')
-    twb_remaining, twb_wells = bead_wash(# global arguments
+    twb_remaining, twb_wells = bead_wash(
+                                         # global arguments
                                          protocol,
                                          magblock,
                                          pipette_left,
@@ -259,17 +264,20 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # super arguments
                                          waste['A1'],
                                          tiprack_wash,
-                                         # wash buffer arguments,
+                                         # wash buffer arguments
                                          twb_wells,
-                                         10000/8,
+                                         twb_fill/8,
                                          # mix arguments
                                          tiprack_wash,
-                                         # optional arguments
-                                         wash_vol=100,
+                                         # optional arguments,
+                                         resuspend_beads=False,
                                          super_vol=60,
+                                         wash_vol=100,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=90,
+                                         wash_tip_vol=300,
+                                         super_tip_vol=200,
                                          remaining=None,
                                          pause_s=pause_mag)
 
@@ -277,7 +285,9 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Do second wash: 100 µL TWB
     # buffer tips 3
     protocol.comment('Doing wash #2.')
-    twb_remaining, twb_wells = bead_wash(# global arguments
+
+    twb_remaining, twb_wells = bead_wash(
+                                         # global arguments
                                          protocol,
                                          magblock,
                                          pipette_left,
@@ -286,19 +296,23 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # super arguments
                                          waste['A1'],
                                          tiprack_wash,
-                                         # wash buffer arguments,
+                                         # wash buffer arguments
                                          twb_wells,
-                                         10000/8,
+                                         twb_fill/8,
                                          # mix arguments
                                          tiprack_wash,
-                                         # optional arguments
+                                         # optional arguments,
+                                         resuspend_beads=False,
+                                         super_vol=60,
                                          wash_vol=100,
-                                         super_vol=100,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=90,
+                                         wash_tip_vol=300,
+                                         super_tip_vol=200,
                                          remaining=twb_remaining,
                                          pause_s=pause_mag)
+
 
     # remove supernatant
     remove_supernatant(pipette_left,
@@ -316,6 +330,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # Step 3: amplification
     # MM: 3 mL; 350 (400 µL) per tip
     # buffer tips 4
+
 
     pcr_wells, pcr_remaining = add_buffer(pipette_left,
                                           pcr_wells,
