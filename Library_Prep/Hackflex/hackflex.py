@@ -104,7 +104,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # define deck positions and labware
 
     # define hardware modules
-    magblock = protocol.load_module('Magnetic Module', 10)
+    magblock = protocol.load_module('magnetic module gen2', 10)
     magblock.disengage()
 
     # tips
@@ -146,7 +146,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                             'right',
                                             tip_racks=[tiprack_reagents])
 
-    # TB2 wells
+    # TB1 wells
     tb1_wells = [buffers[x] for x in tb1_cols]
 
     # TWB wash wells
@@ -202,7 +202,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                samples[col],
                                mag_plate[col],
-                               mix_after=(2, 10),
+                               mix_after=(5, 10),
                                new_tip='never',
                                trash=False)
         pipette_right.return_tip()
@@ -366,10 +366,9 @@ def run(protocol: protocol_api.ProtocolContext):
     # 
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
-                   'Place a new, clean, 96-well BioRad PCR plate in position'
+                   'Place a new, clean, 96-well BioRad PCR plate in position {0}.'
                    'Centrifuge sealed plate at 280 xg for one minute.'
-                   ' Then unseal and return to magblock.'
-                   ' {0}.'.format(samples.parent))
+                   ' Then unseal and return to magblock.'.format(samples.parent))
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage()
@@ -487,7 +486,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=140,
-                                         remaining=None)
+                                         remaining=None,
+                                         pause_s=pause_mag)
 
 
     # ### Do first wash: 150 µL EtOH
@@ -513,7 +513,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=140,
-                                         remaining=eth_remaining)
+                                         remaining=eth_remaining,
+                                         pause_s=pause_mag)
 
 
 
@@ -585,13 +586,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.return_tip()
     
     protocol.delay(seconds=pause_elute)
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 25, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top())
-        pipette_left.touch_tip()
-        # we'll use these same tips for final transfer
-        pipette_left.return_tip()
 
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
