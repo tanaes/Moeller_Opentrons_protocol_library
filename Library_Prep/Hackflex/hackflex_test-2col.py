@@ -53,7 +53,7 @@ pcr_cols = ['A6', 'A7']
 # Wash 1 (TWB) columns
 twb_cols = ['A1', 'A2']
 
-twb_fill = 10000
+twb_fill = 12000
 
 h2o_col = 'A3'
 
@@ -373,7 +373,7 @@ def run(protocol: protocol_api.ProtocolContext):
                    ' program on thermocycler.')
 
 
-
+    protocol.delay(seconds=2)
     # Step 4: Size selection
     # H2O: 72 µL per sample; 7.2 mL; 600 per tip
     # EtOH: 400 µL per sample; 5000 per tip
@@ -382,9 +382,10 @@ def run(protocol: protocol_api.ProtocolContext):
     # 
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
-                   'Place a new, clean, 96-well BioRad PCR plate in position {0}.'
-                   'Centrifuge sealed plate at 280 xg for one minute.'
-                   ' Then unseal and return to magblock.'.format(samples.parent))
+                   'Place a new, clean, 96-well BioRad PCR plate in position'
+                   ' {0}. Remove library plate from PCR machine and spin at '
+                   '280 xg for one minute. Then unseal and return to'
+                   ' magblock.'.format(samples.parent))
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage()
@@ -417,19 +418,18 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.drop_tip() 
 
     # Transfer 45 µL PCR supernatant to new plate
-    for col in cols:
-        transfer_elute(pipette_left,
-                       mag_plate,
-                       samples,
-                       cols,
-                       tiprack_wash,
-                       45,
-                       z_offset=0.5,
-                       x_offset=1,
-                       rate=0.25,
-                       drop_tip=False,
-                       mix_n=5,
-                       mix_vol=100)
+    transfer_elute(pipette_left,
+                   mag_plate,
+                   samples,
+                   cols,
+                   tiprack_wash,
+                   45,
+                   z_offset=0.5,
+                   x_offset=1,
+                   rate=0.25,
+                   drop_tip=False,
+                   mix_n=5,
+                   mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
@@ -456,19 +456,19 @@ def run(protocol: protocol_api.ProtocolContext):
 
 
     # Transfer 125 µL large-cut supernatant to new plate
-    for col in cols:
-        transfer_elute(pipette_left,
-                       mag_plate,
-                       samples,
-                       cols,
-                       tiprack_wash,
-                       125,
-                       z_offset=0.5,
-                       x_offset=1,
-                       rate=0.25,
-                       drop_tip=False,
-                       mix_n=5,
-                       mix_vol=100)
+
+    transfer_elute(pipette_left,
+                   mag_plate,
+                   samples,
+                   cols,
+                   tiprack_wash,
+                   125,
+                   z_offset=0.5,
+                   x_offset=1,
+                   rate=0.25,
+                   drop_tip=False,
+                   mix_n=5,
+                   mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
@@ -508,7 +508,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # ### Do first wash: 150 µL EtOH
     # buffer tips 9
-    protocol.comment('Doing wash #1.')
+    protocol.comment('Doing wash #2.')
     eth_remaining, eth_wells = bead_wash(# global arguments
                                          protocol,
                                          magblock,
@@ -595,7 +595,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
         pipette_left.aspirate(32, buffers[h2o_col], rate=1)
         pipette_left.dispense(32, mag_plate[col].bottom(z=1))
-        pipette_left.mix(10, 25, mag_plate[col].bottom(z=1))
+        pipette_left.mix(10, 29, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
         pipette_left.touch_tip()
         # we'll use these same tips for final transfer
@@ -611,16 +611,16 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_mag)
 
     protocol.comment('Transferring eluted DNA to final plate.')
-    for col in cols:
-        transfer_elute(pipette_left,
-               mag_plate,
-               samples,
-               cols,
-               tiprack_wash,
-               32,
-               z_offset=0.5,
-               x_offset=1,
-               rate=0.25,
-               drop_tip=True)
+
+    transfer_elute(pipette_left,
+           mag_plate,
+           samples,
+           cols,
+           tiprack_wash,
+           30,
+           z_offset=1,
+           x_offset=1,
+           rate=0.1,
+           drop_tip=True)
 
     magblock.disengage()
