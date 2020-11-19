@@ -356,7 +356,6 @@ def run(protocol: protocol_api.ProtocolContext):
                            touch_tip=True,
                            new_tip='once')
 
-
     # plate: primers i7
     for col in cols:
         pipette_right.pick_up_tip(tiprack_primers[col])
@@ -370,17 +369,15 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Prompt user to remove plate and run on thermocycler
 
-    protocol.pause('Remove plate from magblock, seal, and run amplification'
-                   ' program on thermocycler. Click continue when done.')
-
+    protocol.pause('Remove plate from magblock, seal, vortex, spin and run '
+                   'amplification program on thermocycler. Click continue when'
+                   ' done.')
 
     protocol.delay(seconds=2)
     # Step 4: Size selection
     # H2O: 72 µL per sample; 7.2 mL; 600 per tip
     # EtOH: 400 µL per sample; 5000 per tip
     # Beads: 6 mL; 720 µL per tip
-
-    # 
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well BioRad PCR plate in position'
@@ -447,7 +444,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # buffer tips 7
     pipette_left.pick_up_tip()
     pipette_left.mix(10, 100, buffers[beads_col])
-    pipette_left.distribute(15,
+    pipette_left.distribute(14,
                             buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,15),
@@ -456,14 +453,14 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.drop_tip()
 
 
-    # Transfer 125 µL large-cut supernatant to new plate
+    # Transfer 115 µL large-cut supernatant to new plate
 
     transfer_elute(pipette_left,
                    mag_plate,
                    samples,
                    cols,
                    tiprack_wash,
-                   125,
+                   115,
                    z_offset=0.5,
                    x_offset=1,
                    rate=0.25,
@@ -498,10 +495,11 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
+                                         resuspend_beads=False,
                                          wash_vol=150,
                                          super_vol=125,
                                          drop_super_tip=False,
-                                         mix_n=wash_mix,
+                                         mix_n=0,
                                          mix_vol=140,
                                          remaining=None,
                                          pause_s=pause_mag)
@@ -525,10 +523,11 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
+                                         resuspend_beads=False,
                                          wash_vol=150,
                                          super_vol=170,
                                          drop_super_tip=False,
-                                         mix_n=wash_mix,
+                                         mix_n=0,
                                          mix_vol=140,
                                          remaining=eth_remaining,
                                          pause_s=pause_mag)

@@ -444,7 +444,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # buffer tips 7
     pipette_left.pick_up_tip()
     pipette_left.mix(10, 100, buffers[beads_col])
-    pipette_left.distribute(15,
+    pipette_left.distribute(14,
                             buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,15),
@@ -453,14 +453,14 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.drop_tip()
 
 
-    # Transfer 125 µL large-cut supernatant to new plate
+    # Transfer 115 µL large-cut supernatant to new plate
 
     transfer_elute(pipette_left,
                    mag_plate,
                    samples,
                    cols,
                    tiprack_wash,
-                   125,
+                   115,
                    z_offset=0.5,
                    x_offset=1,
                    rate=0.25,
@@ -495,10 +495,11 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
+                                         resuspend_beads=False,
                                          wash_vol=150,
                                          super_vol=125,
                                          drop_super_tip=False,
-                                         mix_n=wash_mix,
+                                         mix_n=0,
                                          mix_vol=140,
                                          remaining=None,
                                          pause_s=pause_mag)
@@ -522,10 +523,11 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # mix arguments
                                          tiprack_wash,
                                          # optional arguments
+                                         resuspend_beads=False,
                                          wash_vol=150,
                                          super_vol=170,
                                          drop_super_tip=False,
-                                         mix_n=wash_mix,
+                                         mix_n=0,
                                          mix_vol=140,
                                          remaining=eth_remaining,
                                          pause_s=pause_mag)
