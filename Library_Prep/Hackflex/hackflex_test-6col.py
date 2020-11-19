@@ -13,7 +13,7 @@ test_run = True
 
 if test_run:
     pause_bind = 5*60
-    pause_mag = 5*60
+    pause_mag = 10*60
     pause_dry = 5*60
     pause_elute = 5*60
 
@@ -273,7 +273,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # optional arguments,
                                          resuspend_beads=False,
-                                         super_vol=60,
+                                         super_vol=70,
+                                         rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
@@ -305,7 +306,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # optional arguments,
                                          resuspend_beads=False,
-                                         super_vol=60,
+                                         super_vol=120,
+                                         rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
@@ -526,7 +528,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash,
                                          # optional arguments
                                          wash_vol=150,
-                                         super_vol=125,
+                                         super_vol=170,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
                                          mix_vol=140,
