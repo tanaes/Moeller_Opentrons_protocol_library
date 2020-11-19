@@ -364,7 +364,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                i7_primers[col],
                                mag_plate[col],
-                               mix_after=(5, 10),
                                touch_tip=True,
                                new_tip='never',
                                trash=False)

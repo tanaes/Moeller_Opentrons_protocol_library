@@ -356,14 +356,12 @@ def run(protocol: protocol_api.ProtocolContext):
                            touch_tip=True,
                            new_tip='once')
 
-
     # plate: primers i7
     for col in cols:
         pipette_right.pick_up_tip(tiprack_primers[col])
         pipette_right.transfer(10,
                                i7_primers[col],
                                mag_plate[col],
-                               mix_after=(5, 10),
                                touch_tip=True,
                                new_tip='never',
                                trash=False)
@@ -371,17 +369,15 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # Prompt user to remove plate and run on thermocycler
 
-    protocol.pause('Remove plate from magblock, seal, and run amplification'
-                   ' program on thermocycler. Click continue when done.')
-
+    protocol.pause('Remove plate from magblock, seal, vortex, spin and run '
+                   'amplification program on thermocycler. Click continue when'
+                   ' done.')
 
     protocol.delay(seconds=2)
     # Step 4: Size selection
     # H2O: 72 µL per sample; 7.2 mL; 600 per tip
     # EtOH: 400 µL per sample; 5000 per tip
     # Beads: 6 mL; 720 µL per tip
-
-    # 
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well BioRad PCR plate in position'
