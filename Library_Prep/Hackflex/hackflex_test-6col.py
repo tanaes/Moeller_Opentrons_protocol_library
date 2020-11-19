@@ -209,7 +209,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                mix_after=(5, 10),
                                new_tip='never',
                                trash=False)
-        pipette_right.return_tip()
+        pipette_right.drop_tip()
 
     # Prompt user to remove plate and run on thermocycler
     protocol.pause('Remove plate from magblock, seal, vortex, and run '
