@@ -194,7 +194,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents[blt_col],
                            [mag_plate[x] for x in cols],
-                           mix_before=(2,10),
+                           mix_before=(2, 10),
                            new_tip='never')
     pipette_right.drop_tip()
 

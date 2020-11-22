@@ -22,7 +22,7 @@ if test_run:
             'A8', 'A10', 'A12']
 else:
     pause_bind = 5*60
-    pause_mag = 5*60
+    pause_mag = 10*60
     pause_dry = 5*60
     pause_elute = 5*60
 
@@ -143,12 +143,12 @@ def run(protocol: protocol_api.ProtocolContext):
     mag_plate = magblock.load_labware('biorad_96_wellplate_200ul_pcr')
 
     # initialize pipettes
-    pipette_left = protocol.load_instrument('p300_multi', 
+    pipette_left = protocol.load_instrument('p300_multi',
                                             'left',
                                             tip_racks=[tiprack_buffers])
-    pipette_right = protocol.load_instrument('p10_multi', 
-                                            'right',
-                                            tip_racks=[tiprack_reagents])
+    pipette_right = protocol.load_instrument('p10_multi',
+                                             'right',
+                                             tip_racks=[tiprack_reagents])
 
     # TB1 wells
     tb1_wells = [reagents[x] for x in tb1_cols]
@@ -161,7 +161,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # EtOH wells
     eth_wells = [buffers[x] for x in eth_cols]
-
 
     # DNA plate
 
@@ -195,7 +194,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents[blt_col],
                            [mag_plate[x] for x in cols],
-                           mix_before=(2,10),
+                           mix_before=(2, 10),
                            new_tip='never')
     pipette_right.drop_tip()
 
