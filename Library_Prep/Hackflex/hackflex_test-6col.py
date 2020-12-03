@@ -18,8 +18,8 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A2', 'A4', 'A6',
-            'A8', 'A10', 'A12']
+    cols = ['A1', 'A3', 'A5',
+            'A7', 'A9', 'A11']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -140,15 +140,15 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
-    mag_plate = magblock.load_labware('biorad_96_wellplate_200ul_pcr')
+    mag_plate = magblock.load_labware('nest_96_wellplate_100ul_pcr_full_skirt')
 
     # initialize pipettes
-    pipette_left = protocol.load_instrument('p300_multi',
+    pipette_left = protocol.load_instrument('p300_multi', 
                                             'left',
                                             tip_racks=[tiprack_buffers])
-    pipette_right = protocol.load_instrument('p10_multi',
-                                             'right',
-                                             tip_racks=[tiprack_reagents])
+    pipette_right = protocol.load_instrument('p10_multi', 
+                                            'right',
+                                            tip_racks=[tiprack_reagents])
 
     # TB1 wells
     tb1_wells = [reagents[x] for x in tb1_cols]
@@ -161,6 +161,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # EtOH wells
     eth_wells = [buffers[x] for x in eth_cols]
+
 
     # DNA plate
 
@@ -205,7 +206,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                samples[col],
                                mag_plate[col],
-                               mix_after=(5, 10),
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
@@ -353,7 +353,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents[i5_col],
                            [mag_plate[x].top(z=-1) for x in cols],
-                           touch_tip=True,
+                           touch_tip=False,
                            new_tip='once')
 
     # plate: primers i7
@@ -380,7 +380,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # Beads: 6 mL; 720 µL per tip
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
-                   'Place a new, clean, 96-well BioRad PCR plate in position'
+                   'Place a new, clean, 96-well Nest PCR plate in position'
                    ' {0}. Remove library plate from PCR machine and spin at '
                    '280 xg for one minute. Then unseal and return to'
                    ' magblock.'.format(samples.parent))
@@ -426,12 +426,12 @@ def run(protocol: protocol_api.ProtocolContext):
                    x_offset=1,
                    rate=0.25,
                    drop_tip=False,
-                   mix_n=5,
+                   mix_n=7,
                    mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
-                   'with a new, clean 96-well BioRad PCR plate.'.format(
+                   'with a new, clean 96-well Nest PCR plate.'.format(
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')
@@ -465,12 +465,12 @@ def run(protocol: protocol_api.ProtocolContext):
                    x_offset=1,
                    rate=0.25,
                    drop_tip=False,
-                   mix_n=5,
+                   mix_n=7,
                    mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
-                   'with a new, clean 96-well BioRad PCR plate.'.format(
+                   'with a new, clean 96-well **BioRad** PCR plate.'.format(
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')
@@ -554,7 +554,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        waste['A1'],
                        super_vol=170,
                        rate=bead_flow,
-                       bottom_offset=.5,
+                       bottom_offset=.3,
                        drop_tip=True)
 
     # dry
@@ -593,8 +593,8 @@ def run(protocol: protocol_api.ProtocolContext):
     # add elution buffer and mix
     for col in cols:
         pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.aspirate(32, buffers[h2o_col], rate=1)
-        pipette_left.dispense(32, mag_plate[col].bottom(z=1))
+        pipette_left.aspirate(35, buffers[h2o_col], rate=1)
+        pipette_left.dispense(35, mag_plate[col].bottom(z=1))
         pipette_left.mix(10, 29, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
         pipette_left.touch_tip()
@@ -613,14 +613,14 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Transferring eluted DNA to final plate.')
 
     transfer_elute(pipette_left,
-           mag_plate,
-           samples,
-           cols,
-           tiprack_wash,
-           30,
-           z_offset=1,
-           x_offset=1,
-           rate=0.1,
-           drop_tip=True)
+                   mag_plate,
+                   samples,
+                   cols,
+                   tiprack_wash,
+                   30,
+                   z_offset=1.5,
+                   x_offset=1,
+                   rate=0.1,
+                   drop_tip=True)
 
     magblock.disengage()
