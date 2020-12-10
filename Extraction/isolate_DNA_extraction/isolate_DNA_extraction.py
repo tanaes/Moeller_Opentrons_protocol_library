@@ -198,7 +198,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
         pipette_left.mix(10, 200, mag_plate[col].bottom(z=8))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
     # bind
@@ -257,7 +256,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.dispense(190, mag_plate[col].top(z=-5))
         pipette_left.mix(10, 200, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip(v_offset=-1)
         pipette_left.return_tip()
 
     # bind
@@ -383,7 +381,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.dispense(50, mag_plate[col].bottom(z=1))
         pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
-        pipette_left.touch_tip()
         # we'll use these same tips for final transfer
         pipette_left.return_tip()
 
@@ -397,7 +394,6 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
         pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
         pipette_left.blow_out(mag_plate[col].top())
-        pipette_left.touch_tip()
         # we'll use these same tips for final transfer
         pipette_left.drop_tip()
         # t_mix = clock() - t0
@@ -416,7 +412,7 @@ def run(protocol: protocol_api.ProtocolContext):
                    eluate,
                    cols,
                    tiprack_elution_2,
-                   50,
+                   45,
                    z_offset=0.5,
                    x_offset=1,
                    rate=0.25,
