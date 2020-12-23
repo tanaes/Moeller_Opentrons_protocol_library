@@ -474,7 +474,8 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
-                   'with a new, clean 96-well **BioRad** PCR plate.'.format(
+                   'with a new, clean 96-well **BioRad** PCR plate. '
+                   'Also, fill Ethanol wells at this stage.'.format(
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')

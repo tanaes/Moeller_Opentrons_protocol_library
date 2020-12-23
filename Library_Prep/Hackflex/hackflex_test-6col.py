@@ -18,8 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1', 'A3', 'A5',
-            'A7', 'A9', 'A11']
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -206,12 +205,13 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                samples[col],
                                mag_plate[col],
+                               mix_after=(10, 10),
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
 
     # Prompt user to remove plate and run on thermocycler
-    protocol.pause('Remove plate from magblock, seal, vortex, and run '
+    protocol.pause('Remove plate from magblock, seal, and run '
                    'program TAG on thermocycler. Then spin down, unseal, '
                    'and return to magblock.')
 
@@ -232,7 +232,7 @@ def run(protocol: protocol_api.ProtocolContext):
                            touch_tip=False,
                            new_tip='once')
 
-    protocol.pause('Remove plate from magblock, seal, vortex, and run '
+    protocol.pause('Remove plate from magblock, seal, vortex, spin, and run '
                    'program PTC on thermocycler. Then spin down, unseal, '
                    'and return to magblock.')
 
@@ -334,6 +334,10 @@ def run(protocol: protocol_api.ProtocolContext):
     # MM: 3 mL; 350 (400 µL) per tip
     # buffer tips 4
 
+    # Prompt user to unseal i7 PCR plate
+
+    protocol.pause('Now, unseal i7 PCR primer plate, and uncap PCR master'
+                   ' mix and i5 primer strip tubes.')
 
     pcr_wells, pcr_remaining = add_buffer(pipette_left,
                                           pcr_wells,
@@ -470,7 +474,8 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.pause('Remove and discard plate from mag block. '
                    'Move plate in position {0} to mag block, and replace '
-                   'with a new, clean 96-well **BioRad** PCR plate.'.format(
+                   'with a new, clean 96-well **BioRad** PCR plate. '
+                   'Also, fill Ethanol wells at this stage.'.format(
                     samples.parent))
 
     protocol.comment('Binding beads to magnet.')
