@@ -29,3 +29,14 @@
   echo "output = ${output}"
   [ "$status" -eq 0 ]
 }
+
+
+@test "Testing Hackflex size select protocol" {
+  run opentrons_simulate \
+       -L ../Labware/custom_labware \
+       ../Library_Prep/Hackflex/hackflex-only_size_select.py \
+       > test_hackflex-only_size_select.out 2>&1
+  echo "status = ${status}"
+  echo "output = ${output}"
+  [ "$status" -eq 0 ]
+}
