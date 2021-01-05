@@ -135,7 +135,7 @@ def run(protocol: protocol_api.ProtocolContext):
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
                                    1, 'samples')
     elution = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                       6, 'i7 primers')
+                                       6, 'elution')
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
@@ -175,7 +175,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.distribute(40,
                             buffers[h2o_col],
                             [mag_plate[x].top(z=-1) for x in cols],
-                            touch_tip=True,
+                            touch_tip=False,
                             disposal_volume=10,
                             new_tip='once') 
 
@@ -187,10 +187,18 @@ def run(protocol: protocol_api.ProtocolContext):
                             buffers[beads_col],
                             [mag_plate[x].top(z=-1) for x in cols],
                             mix_before=(2,40),
-                            touch_tip=True,
+                            touch_tip=False,
                             disposal_volume=10,
                             new_tip='never')
     pipette_left.drop_tip() 
+
+    for col in cols:
+        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
+        pipette_left.mix(10,
+                         80,
+                         mag_plate[col])
+        pipette_left.return_tip()
+
 
 
     protocol.comment('Binding beads to magnet.')
