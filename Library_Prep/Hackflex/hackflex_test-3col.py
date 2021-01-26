@@ -9,7 +9,7 @@ metadata = {'apiLevel': '2.5',
 
 # Set to `True` to perform a short run, with brief pauses and only 
 # one column of samples
-test_run = False
+test_run = True
 
 if test_run:
     pause_bind = 5*60
@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1', 'A2']
+    cols = ['A3', 'A4', 'A5']
 else:
     pause_bind = 5*60
     pause_mag = 10*60

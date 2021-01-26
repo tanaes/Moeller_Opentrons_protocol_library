@@ -20,6 +20,15 @@
   [ "$status" -eq 0 ]
 }
 
+@test "Testing Hackflex 3 col protocol" {
+  run opentrons_simulate \
+       -L ../Labware/custom_labware \
+       ../Library_Prep/Hackflex/hackflex_test-3col.py \
+       > test_Hackflex_test-3col.out 2>&1
+  echo "status = ${status}"
+  echo "output = ${output}"
+  [ "$status" -eq 0 ]
+}
 @test "Testing Hackflex 6 col protocol" {
   run opentrons_simulate \
        -L ../Labware/custom_labware \
