@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1', 'A2']
+    cols = ['A6', 'A7']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -383,6 +383,13 @@ def run(protocol: protocol_api.ProtocolContext):
     # EtOH: 400 µL per sample; 5000 per tip
     # Beads: 6 mL; 720 µL per tip
 
+    # Prompt user to remove plate and run on thermocycler
+
+    protocol.pause('Replace tips in position {0}'
+                   ' with a fresh box'.format(tiprack_wash.parent))
+
+    protocol.delay(seconds=2)
+
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well Nest PCR plate in position'
                    ' {0}. Remove library plate from PCR machine and spin at '
@@ -393,6 +400,14 @@ def run(protocol: protocol_api.ProtocolContext):
     magblock.engage()
 
     protocol.delay(seconds=pause_mag)
+
+    cols.pop()
+
+    protocol.pause('Continuing with only samples from column[s] {0}.'
+                   ''.format(cols))
+
+    protocol.delay(seconds=2)
+
 
     # Add buffers for large-cut size selection to new plate
     protocol.comment('Preparing large-cut bead conditions in new plate.')
