@@ -276,6 +276,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
+                                         touch_wash_tip=True,
                                          mix_n=wash_mix,
                                          mix_vol=90,
                                          wash_tip_vol=300,
@@ -309,6 +310,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
+                                         touch_wash_tip=True,
                                          mix_n=wash_mix,
                                          mix_vol=90,
                                          wash_tip_vol=300,
@@ -357,7 +359,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents[i5_col],
                            [mag_plate[x].top(z=-1) for x in cols],
-                           touch_tip=False,
+                           touch_tip=True,
                            new_tip='once')
 
     # plate: primers i7
