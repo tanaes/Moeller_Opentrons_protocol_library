@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A6', 'A7']
+    cols = ['A8', 'A9']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -403,14 +403,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.delay(seconds=pause_mag)
 
-    cols.pop()
-
-    protocol.pause('Continuing with only samples from column[s] {0}.'
-                   ''.format(cols))
-
-    protocol.delay(seconds=2)
-
-
     # Add buffers for large-cut size selection to new plate
     protocol.comment('Preparing large-cut bead conditions in new plate.')
 
@@ -461,11 +453,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
 
     # Add buffers for small-cut size selection to new plate
-    # Add 15 µL SPRI beads
+    # Add 20 µL SPRI beads
     # buffer tips 7
     pipette_left.pick_up_tip()
     pipette_left.mix(10, 100, buffers[beads_col])
-    pipette_left.distribute(14,
+    pipette_left.distribute(20,
                             buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,15),
