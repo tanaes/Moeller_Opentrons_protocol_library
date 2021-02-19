@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
+    # cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -103,6 +103,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # 7: 80% EtOH
 
     # ### Setup
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5']
 
     # define deck positions and labware
 
