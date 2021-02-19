@@ -199,6 +199,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.drop_tip()
 
     # add sample
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5']
 
     for col in cols:
         pipette_right.pick_up_tip(tiprack_samples[col])
@@ -209,6 +210,12 @@ def run(protocol: protocol_api.ProtocolContext):
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
+
+    cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
+    # Prompt user to remove plate and run on thermocycler
+    protocol.pause('JON: add positive controls to A6!!!')
+
+    protocol.delay(seconds=2)
 
     # Prompt user to remove plate and run on thermocycler
     protocol.pause('Remove plate from magblock, seal, and run '
@@ -276,6 +283,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
+                                         touch_wash_tip=True,
                                          mix_n=wash_mix,
                                          mix_vol=90,
                                          wash_tip_vol=300,
@@ -309,6 +317,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          rate=bead_flow,
                                          wash_vol=100,
                                          drop_super_tip=False,
+                                         touch_wash_tip=True,
                                          mix_n=wash_mix,
                                          mix_vol=90,
                                          wash_tip_vol=300,
@@ -357,7 +366,7 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_right.transfer(10,
                            reagents[i5_col],
                            [mag_plate[x].top(z=-1) for x in cols],
-                           touch_tip=False,
+                           touch_tip=True,
                            new_tip='once')
 
     # plate: primers i7
@@ -382,6 +391,13 @@ def run(protocol: protocol_api.ProtocolContext):
     # H2O: 72 µL per sample; 7.2 mL; 600 per tip
     # EtOH: 400 µL per sample; 5000 per tip
     # Beads: 6 mL; 720 µL per tip
+
+    # Prompt user to remove plate and run on thermocycler
+
+    protocol.pause('Replace tips in position {0}'
+                   ' with a fresh box'.format(tiprack_wash.parent))
+
+    protocol.delay(seconds=2)
 
     protocol.pause('Remove sample plate from position {0}, seal, and store. '
                    'Place a new, clean, 96-well Nest PCR plate in position'
@@ -444,11 +460,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
 
     # Add buffers for small-cut size selection to new plate
-    # Add 15 µL SPRI beads
+    # Add 20 µL SPRI beads
     # buffer tips 7
     pipette_left.pick_up_tip()
     pipette_left.mix(10, 100, buffers[beads_col])
-    pipette_left.distribute(14,
+    pipette_left.distribute(20,
                             buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2,15),
