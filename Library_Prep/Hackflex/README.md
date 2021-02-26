@@ -78,7 +78,7 @@ Bead washes
 - 2x Opentrons 300 µL tips
 - 1x Opentrons 200 µL filter tips
 - 1x Opentrons 20 µL tips
-- 2x Opentrons 10 µL filter tips
+- 3x Opentrons 10 µL filter tips
 
 Reservoir plates can be washed and reused. 
 

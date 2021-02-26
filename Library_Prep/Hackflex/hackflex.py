@@ -7,7 +7,7 @@ from opentrons_functions.transfer import add_buffer
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
-# Set to `True` to perform a short run, with brief pauses and only 
+# Set to `True` to perform a short run, with brief pauses and only
 # one column of samples
 test_run = False
 
@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A6', 'A7']
+    # cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
 else:
     pause_bind = 5*60
     pause_mag = 10*60
@@ -28,7 +28,7 @@ else:
     # Limit columns
     cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
             'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
-  
+
 
 # bead aspiration flow rate
 bead_flow = .25
@@ -47,9 +47,6 @@ i5_col = 'A5'
 # PCR MM columns
 pcr_cols = ['A6', 'A7']
 
-
-
-
 # Wash 1 (TWB) columns
 twb_cols = ['A1', 'A2']
 
@@ -63,6 +60,7 @@ beads_col = 'A4'
 eth_cols = ['A5', 'A6', 'A7']
 
 eth_fill = 12000
+
 
 def run(protocol: protocol_api.ProtocolContext):
 
@@ -80,7 +78,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # 8. 300 tips (reagents)
     # 9. 10f tips (primers)
     # 10. mag module
-    # 11. waste
+    # 11. i5 primers
     # 12. trash
 
     # define custom labware for strip tubes block
@@ -111,43 +109,50 @@ def run(protocol: protocol_api.ProtocolContext):
     magblock.disengage()
 
     # tips
-    tiprack_samples = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
+    tiprack_samples = protocol.load_labware('opentrons_96_filtertiprack_10ul',
                                             5)
-    tiprack_buffers = protocol.load_labware('opentrons_96_tiprack_300ul', 
+    tiprack_buffers = protocol.load_labware('opentrons_96_tiprack_300ul',
                                             8)
-    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul', 
+    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul',
                                          4)
-    tiprack_primers = protocol.load_labware('opentrons_96_filtertiprack_10ul', 
-                                            9)
-    tiprack_reagents = protocol.load_labware('opentrons_96_tiprack_20ul', 
+    tiprack_i7_primers = protocol.load_labware('opentrons_96_'
+                                               'filtertiprack_10ul',
+                                               9)
+    tiprack_i5_primers = protocol.load_labware('opentrons_96_'
+                                               'filtertiprack_10ul',
+                                               11)
+    tiprack_reagents = protocol.load_labware('opentrons_96_tiprack_20ul',
                                              7)
 
     # reagents
     # should be new custom labware with strip tubes
-    reagents = protocol.load_labware('tubeblockvwrpcrstriptube_96_wellplate_250ul',
-                                     3, 'reagents')
-    buffers = protocol.load_labware('nest_12_reservoir_15ml', 
-                                    2, 'wash buffers')
-    waste = protocol.load_labware('nest_1_reservoir_195ml',
-                                  11, 'liquid waste')
+    reagents = protocol.load_labware('tubeblockvwrpcrstriptube_'
+                                     '96_wellplate_250ul',
+                                     3,
+                                     'reagents')
+    buffers = protocol.load_labware('nest_12_reservoir_15ml',
+                                    2,
+                                    'wash buffers')
 
     # plates
     samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                   1, 'samples')
+                                    1,
+                                    'samples')
     i7_primers = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                       6, 'i7 primers')
+                                       6,
+                                       'i7 primers')
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
     mag_plate = magblock.load_labware('nest_96_wellplate_100ul_pcr_full_skirt')
 
     # initialize pipettes
-    pipette_left = protocol.load_instrument('p300_multi', 
+    pipette_left = protocol.load_instrument('p300_multi',
                                             'left',
                                             tip_racks=[tiprack_buffers])
-    pipette_right = protocol.load_instrument('p10_multi', 
-                                            'right',
-                                            tip_racks=[tiprack_reagents])
+    pipette_right = protocol.load_instrument('p10_multi',
+                                             'right',
+                                             tip_racks=[tiprack_reagents])
 
     # TB1 wells
     tb1_wells = [reagents[x] for x in tb1_cols]
@@ -160,7 +165,6 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # EtOH wells
     eth_wells = [buffers[x] for x in eth_cols]
-
 
     # DNA plate
 
@@ -211,10 +215,12 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.drop_tip()
 
     # Prompt user to remove plate and run on thermocycler
+    protocol.delay(seconds=2)
+
+    # Prompt user to remove plate and run on thermocycler
     protocol.pause('Remove plate from magblock, seal, and run '
                    'program TAG on thermocycler. Then spin down, unseal, '
                    'and return to magblock.')
-
 
     # Step 2: Stop reaction
     # TSB: 1 mL; 120 (150 µL) per tip
@@ -222,8 +228,8 @@ def run(protocol: protocol_api.ProtocolContext):
     # add TSB to each sample.
     # Prompt user to remove plate and run on thermocycler
 
-    ### Is this step going to cross-contaminate? Seems wasteful to take.
-    ### new tip for each sample. z = -1 meant to help.  
+    # ## Is this step going to cross-contaminate? Seems wasteful to take.
+    # ## new tip for each sample. z = -1 meant to help.
 
     # reagent tips 2
     pipette_right.transfer(10,
@@ -236,7 +242,6 @@ def run(protocol: protocol_api.ProtocolContext):
                    'program PTC on thermocycler. Then spin down, unseal, '
                    'and return to magblock.')
 
-
     # Step 3: Cleanup
     # TWB: 20 mL; 1200 (1500 µL) per tip
 
@@ -248,7 +253,6 @@ def run(protocol: protocol_api.ProtocolContext):
     magblock.engage()
 
     protocol.delay(seconds=pause_mag)
-
 
     # ### Do first wash: 100 µL TWB
     # buffer tips 2
@@ -263,7 +267,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mag_plate,
                                          cols,
                                          # super arguments
-                                         waste['A1'],
+                                         protocol.fixed_trash['A1'],
                                          tiprack_wash,
                                          # wash buffer arguments
                                          twb_wells,
@@ -284,7 +288,6 @@ def run(protocol: protocol_api.ProtocolContext):
                                          remaining=None,
                                          pause_s=pause_mag)
 
-
     # ### Do second wash: 100 µL TWB
     # buffer tips 3
     protocol.comment('Doing wash #2.')
@@ -297,7 +300,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mag_plate,
                                          cols,
                                          # super arguments
-                                         waste['A1'],
+                                         protocol.fixed_trash['A1'],
                                          tiprack_wash,
                                          # wash buffer arguments
                                          twb_wells,
@@ -318,13 +321,12 @@ def run(protocol: protocol_api.ProtocolContext):
                                          remaining=twb_remaining,
                                          pause_s=pause_mag)
 
-
     # remove supernatant
     remove_supernatant(pipette_left,
                        mag_plate,
                        cols,
                        tiprack_wash,
-                       waste['A1'],
+                       protocol.fixed_trash['A1'],
                        super_vol=120,
                        rate=bead_flow,
                        bottom_offset=.8,
@@ -353,20 +355,20 @@ def run(protocol: protocol_api.ProtocolContext):
                                           drop_tip=True,
                                           dead_vol=10)
 
-
-    # plate: primers i5
-    # reagent tips 3
-    pipette_right.transfer(10,
-                           reagents[i5_col],
-                           [mag_plate[x].top(z=-1) for x in cols],
-                           touch_tip=True,
-                           new_tip='once')
-
-    # plate: primers i7
+    # transfer primers
     for col in cols:
-        pipette_right.pick_up_tip(tiprack_primers[col])
+        pipette_right.pick_up_tip(tiprack_i7_primers[col])
         pipette_right.transfer(10,
                                i7_primers[col],
+                               mag_plate[col],
+                               touch_tip=True,
+                               new_tip='never',
+                               trash=False)
+        pipette_right.drop_tip()
+
+        pipette_right.pick_up_tip(tiprack_i5_primers[col])
+        pipette_right.transfer(10,
+                               reagents[i5_col],
                                mag_plate[col],
                                touch_tip=True,
                                new_tip='never',
@@ -413,7 +415,7 @@ def run(protocol: protocol_api.ProtocolContext):
                             [samples[x].top(z=-1) for x in cols],
                             touch_tip=True,
                             disposal_volume=10,
-                            new_tip='once') 
+                            new_tip='once')
 
     # Add 45 µL SPRI beads
     # buffer tips 6
@@ -422,11 +424,11 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.distribute(45,
                             buffers[beads_col],
                             [samples[x].top(z=-1) for x in cols],
-                            mix_before=(2,40),
+                            mix_before=(2, 40),
                             touch_tip=True,
                             disposal_volume=10,
                             new_tip='never')
-    pipette_left.drop_tip() 
+    pipette_left.drop_tip()
 
     # Transfer 45 µL PCR supernatant to new plate
     transfer_elute(pipette_left,
@@ -451,7 +453,6 @@ def run(protocol: protocol_api.ProtocolContext):
     magblock.engage()
     protocol.delay(seconds=pause_mag)
 
-
     # Add buffers for small-cut size selection to new plate
     # Add 20 µL SPRI beads
     # buffer tips 7
@@ -460,11 +461,10 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.distribute(20,
                             buffers[beads_col],
                             [samples[x] for x in cols],
-                            mix_before=(2,15),
+                            mix_before=(2, 15),
                             touch_tip=True,
-                            new_tip='never') 
+                            new_tip='never')
     pipette_left.drop_tip()
-
 
     # Transfer 115 µL large-cut supernatant to new plate
 
@@ -494,14 +494,15 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Do first wash: 150 µL EtOH
     # buffer tips 8
     protocol.comment('Doing wash #1.')
-    eth_remaining, eth_wells = bead_wash(# global arguments
+    eth_remaining, eth_wells = bead_wash(
+                                         # global arguments
                                          protocol,
                                          magblock,
                                          pipette_left,
                                          mag_plate,
                                          cols,
                                          # super arguments
-                                         waste['A1'],
+                                         protocol.fixed_trash['A1'],
                                          tiprack_wash,
                                          # wash buffer arguments,
                                          eth_wells,
@@ -518,18 +519,18 @@ def run(protocol: protocol_api.ProtocolContext):
                                          remaining=None,
                                          pause_s=pause_mag)
 
-
     # ### Do first wash: 150 µL EtOH
     # buffer tips 9
     protocol.comment('Doing wash #2.')
-    eth_remaining, eth_wells = bead_wash(# global arguments
+    eth_remaining, eth_wells = bead_wash(
+                                         # global arguments
                                          protocol,
                                          magblock,
                                          pipette_left,
                                          mag_plate,
                                          cols,
                                          # super arguments
-                                         waste['A1'],
+                                         protocol.fixed_trash['A1'],
                                          tiprack_wash,
                                          # wash buffer arguments,
                                          eth_wells,
@@ -545,8 +546,6 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mix_vol=140,
                                          remaining=eth_remaining,
                                          pause_s=pause_mag)
-
-
 
     # ### Dry
     protocol.comment('Removing wash and drying beads.')
@@ -565,7 +564,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        mag_plate,
                        cols,
                        tiprack_wash,
-                       waste['A1'],
+                       protocol.fixed_trash['A1'],
                        super_vol=170,
                        rate=bead_flow,
                        bottom_offset=.3,
@@ -575,10 +574,8 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.delay(seconds=pause_dry)
 
-
     protocol.pause('Replace empty tiprack in position {0} with new rack of '
                    '200 µL filter tips.'.format(tiprack_wash.parent))
-
 
     # ### Elute
     protocol.comment('Eluting DNA from beads.')
@@ -599,7 +596,6 @@ def run(protocol: protocol_api.ProtocolContext):
     # - dispense to position 3
     # - trash tip
 
-
     # transfer elution buffer to mag plate
 
     magblock.disengage()
@@ -614,7 +610,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_left.touch_tip()
         # we'll use these same tips for final transfer
         pipette_left.return_tip()
-    
+
     protocol.delay(seconds=pause_elute)
 
     # bind to magnet
