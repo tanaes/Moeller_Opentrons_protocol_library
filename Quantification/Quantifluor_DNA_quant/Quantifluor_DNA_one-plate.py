@@ -1,14 +1,10 @@
 from opentrons import protocol_api
-from opentrons.protocols.types import APIVersion
 from opentrons_functions.transfer import add_buffer
 
 
 metadata = {
     'apiLevel': '2.5',
     'author': 'Jon Sanders'}
-
-
-api_version = APIVersion(2, 5)
 
 cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
         'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
