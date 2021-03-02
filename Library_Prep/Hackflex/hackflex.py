@@ -12,16 +12,16 @@ metadata = {'apiLevel': '2.5',
 test_run = False
 
 if test_run:
-    pause_bind = 5*60
-    pause_mag = 10*60
+    pause_bind = 3*60
+    pause_mag = 5*60
     pause_dry = 5*60
     pause_elute = 5*60
 
     # Limit columns
     # cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
 else:
-    pause_bind = 5*60
-    pause_mag = 10*60
+    pause_bind = 3*60
+    pause_mag = 5*60
     pause_dry = 5*60
     pause_elute = 5*60
 
@@ -361,7 +361,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                i7_primers[col],
                                mag_plate[col],
-                               touch_tip=True,
+                               touch_tip=False,
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
@@ -370,7 +370,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                reagents[i5_col],
                                mag_plate[col],
-                               touch_tip=True,
+                               touch_tip=False,
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
@@ -449,6 +449,10 @@ def run(protocol: protocol_api.ProtocolContext):
                    'with a new, clean 96-well Nest PCR plate.'.format(
                     samples.parent))
 
+    magblock.disengage()
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind)
+
     protocol.comment('Binding beads to magnet.')
     magblock.engage()
     protocol.delay(seconds=pause_mag)
@@ -486,6 +490,10 @@ def run(protocol: protocol_api.ProtocolContext):
                    'with a new, clean 96-well **BioRad** PCR plate. '
                    'Also, fill Ethanol wells at this stage.'.format(
                     samples.parent))
+
+    magblock.disengage()
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind)
 
     protocol.comment('Binding beads to magnet.')
     magblock.engage()
