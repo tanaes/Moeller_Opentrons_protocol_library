@@ -44,11 +44,11 @@ def run(protocol: protocol_api.ProtocolContext):
     # replace it in the rack.
 
     add_buffer(pipette_left,
-               [reagents[x] for x in ['A1', 'A2']],
+               [reagents[x] for x in ['A1']],
                assay,
                cols,
-               198,
-               13000/8,
+               95,
+               12000/8,
                tip=None,
                tip_vol=300,
                remaining=None,
@@ -56,7 +56,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # add 2 µL of each sample to each of the wells. Mix after dispensing.
     # Dispose of these tips.
-    pipette_right.transfer(2,
+    pipette_right.transfer(5,
                            [samples[x] for x in cols],
                            [assay[x] for x in cols],
                            mix_after=(5, 10),
