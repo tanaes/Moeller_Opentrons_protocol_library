@@ -209,7 +209,7 @@ def run(protocol: protocol_api.ProtocolContext):
         pipette_right.transfer(10,
                                samples[col],
                                mag_plate[col],
-                               mix_after=(10, 10),
+                               # mix_after=(10, 10),
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
@@ -236,6 +236,7 @@ def run(protocol: protocol_api.ProtocolContext):
                            reagents[tsb_col],
                            [mag_plate[x].top(z=-1) for x in cols],
                            touch_tip=False,
+                           blow_out=True,
                            new_tip='once')
 
     protocol.pause('Remove plate from magblock, seal, vortex, spin, and run '
@@ -441,7 +442,7 @@ def run(protocol: protocol_api.ProtocolContext):
                    x_offset=1,
                    rate=0.25,
                    drop_tip=False,
-                   mix_n=7,
+                   mix_n=5,
                    mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
@@ -482,7 +483,7 @@ def run(protocol: protocol_api.ProtocolContext):
                    x_offset=1,
                    rate=0.25,
                    drop_tip=False,
-                   mix_n=7,
+                   mix_n=5,
                    mix_vol=100)
 
     protocol.pause('Remove and discard plate from mag block. '
