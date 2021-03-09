@@ -131,6 +131,11 @@ dmypy.json
 
 
 
+#### Test output files
+
+Tests/*.out
+
+
 #### OS X
 # General
 .DS_Store
