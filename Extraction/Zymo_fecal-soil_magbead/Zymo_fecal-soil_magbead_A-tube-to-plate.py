@@ -12,7 +12,7 @@ metadata = {
 quantity = 200
 
 # Height above bottom of source tube to aspirate from
-z_height = 15
+z_height = 13
 
 # Rate of aspiration (1 is default for pipette)
 rate = 0.25
