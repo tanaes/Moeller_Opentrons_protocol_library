@@ -10,46 +10,6 @@
   [ "$status" -eq 0 ]
 }
 
-@test "Testing beadwash test" {
-  run opentrons_simulate \
-       -L ../Labware/custom_labware \
-       ../Extraction/isolate_DNA_extraction/bead_test_1-6.py \
-       > test_bead_test.out
-  echo "status = ${status}"
-  echo "output = ${output}"
-  [ "$status" -eq 0 ]
-}
-
-@test "Testing isolate DNA beadwash - 2 col" {
-  run opentrons_simulate \
-       -L ../Labware/custom_labware \
-       ../Extraction/isolate_DNA_extraction/isolate_DNA_extraction-beadwash.py \
-       > test_isolate_DNA_extraction.out
-  echo "status = ${status}"
-  echo "output = ${output}"
-  [ "$status" -eq 0 ]
-}
-
-@test "Testing isolate DNA extraction - 2 col" {
-  run opentrons_simulate \
-       -L ../Labware/custom_labware \
-       ../Extraction/isolate_DNA_extraction/isolate_DNA_extraction-2col.py \
-       > test_isolate_DNA_extraction.out
-  echo "status = ${status}"
-  echo "output = ${output}"
-  [ "$status" -eq 0 ]
-}
-
-@test "Testing isolate DNA extraction - 4 col stepwise" {
-  run opentrons_simulate \
-       -L ../Labware/custom_labware \
-       ../Extraction/isolate_DNA_extraction/isolate_DNA_extraction-4col-steps.py \
-       > test_isolate_DNA_extraction.out
-  echo "status = ${status}"
-  echo "output = ${output}"
-  [ "$status" -eq 0 ]
-}
-
 @test "Testing Zymo fecal/soil magbead extraction, Part A" {
   run opentrons_simulate \
        -L ../Labware/custom_labware \

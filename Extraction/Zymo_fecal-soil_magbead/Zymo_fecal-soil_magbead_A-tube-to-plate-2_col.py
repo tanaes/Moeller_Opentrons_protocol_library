@@ -21,7 +21,7 @@ rate = 0.25
 tuberack_labware = 'opentrons_24_tuberack_generic_2ml_screwcap'
 
 # Subset columns if desired
-cols = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+cols = [1, 2]
 
 
 def run(protocol: protocol_api.ProtocolContext):
