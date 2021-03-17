@@ -1,6 +1,6 @@
 from opentrons import protocol_api
 from opentrons_functions.magbeads import (
-    remove_supernatant, bead_wash)
+    remove_supernatant, bead_wash, bead_mix)
 from opentrons_functions.transfer import add_buffer
 
 
@@ -122,24 +122,30 @@ def run(protocol: protocol_api.ProtocolContext):
                                           pre_mix=10)
 
     # mix beads and samples
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
-        pipette_left.return_tip()
+    bead_mix(pipette_left,
+             mag_plate,
+             cols,
+             tiprack_wash,
+             n=10,
+             mix_vol=250,
+             z_offset=10,
+             mix_lift=12,
+             drop_tip=False)
 
     # bind to beads
     protocol.comment('Binding DNA to beads.')
     protocol.delay(seconds=pause_bind)
 
     # mix again
-    for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
-        pipette_left.return_tip()
+    bead_mix(pipette_left,
+             mag_plate,
+             cols,
+             tiprack_wash,
+             n=10,
+             mix_vol=250,
+             z_offset=10,
+             mix_lift=12,
+             drop_tip=False)
 
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
@@ -169,6 +175,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          super_vol=800,
                                          drop_super_tip=False,
                                          mix_n=wash_mix,
+                                         mix_lift=12,
                                          mag_engage_height=mag_engage_height)
 
     # ### Do second wash: Wash 500 µL MagWash 1
