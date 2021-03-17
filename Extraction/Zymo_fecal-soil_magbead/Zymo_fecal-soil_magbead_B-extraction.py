@@ -14,7 +14,7 @@ test_run = False
 if test_run:
     pause_bind = 5*60
     pause_mag = 3*60
-    pause_dry = 5*60
+    pause_dry = 30*60
     pause_elute = 5*60
 
     # Limit columns
@@ -22,7 +22,7 @@ if test_run:
 else:
     pause_bind = 5*60
     pause_mag = 3*60
-    pause_dry = 5*60
+    pause_dry = 30*60
     pause_elute = 5*60
 
     # Limit columns
