@@ -128,14 +128,14 @@ def run(protocol: protocol_api.ProtocolContext):
              tiprack_wash,
              n=10,
              mix_vol=250,
-             z_offset=10,
-             mix_lift=12,
+             z_offset=5,
+             mix_lift=20,
              drop_tip=False)
 
     # bind to beads
     protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind)
-
+    protocol.delay(seconds=pause_bind/2)
+    
     # mix again
     bead_mix(pipette_left,
              mag_plate,
@@ -143,10 +143,14 @@ def run(protocol: protocol_api.ProtocolContext):
              tiprack_wash,
              n=10,
              mix_vol=250,
-             z_offset=10,
-             mix_lift=12,
+             z_offset=5,
+             mix_lift=20,
              drop_tip=False)
 
+    # bind to beads
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind/2)
+    
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)

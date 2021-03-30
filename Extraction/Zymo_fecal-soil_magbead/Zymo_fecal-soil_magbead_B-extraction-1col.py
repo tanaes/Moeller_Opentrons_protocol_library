@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A10']
+    cols = ['A1']
 else:
     pause_bind = 5*60
     pause_mag = 3*60
@@ -128,13 +128,13 @@ def run(protocol: protocol_api.ProtocolContext):
              tiprack_wash,
              n=10,
              mix_vol=250,
-             z_offset=10,
-             mix_lift=12,
+             z_offset=5,
+             mix_lift=20,
              drop_tip=False)
 
     # bind to beads
     protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind)
+    protocol.delay(seconds=pause_bind/2)
 
     # mix again
     bead_mix(pipette_left,
@@ -143,9 +143,13 @@ def run(protocol: protocol_api.ProtocolContext):
              tiprack_wash,
              n=10,
              mix_vol=250,
-             z_offset=10,
-             mix_lift=12,
+             z_offset=5,
+             mix_lift=20,
              drop_tip=False)
+
+    # bind to beads
+    protocol.comment('Binding DNA to beads.')
+    protocol.delay(seconds=pause_bind/2)
 
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
