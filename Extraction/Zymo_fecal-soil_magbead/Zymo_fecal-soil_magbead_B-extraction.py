@@ -121,36 +121,15 @@ def run(protocol: protocol_api.ProtocolContext):
                                           18000/8,
                                           pre_mix=10)
 
-    # mix beads and samples
-    bead_mix(pipette_left,
-             mag_plate,
-             cols,
-             tiprack_wash,
-             n=10,
-             mix_vol=250,
-             z_offset=5,
-             mix_lift=20,
-             drop_tip=False)
-
-    # bind to beads
-    protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind/2)
+    # ### Prompt user to place plate on rotator
+    protocol.pause('Seal plate and place on rotator. Rotate at low '
+                   'speed for 10 minutes.')
     
-    # mix again
-    bead_mix(pipette_left,
-             mag_plate,
-             cols,
-             tiprack_wash,
-             n=10,
-             mix_vol=250,
-             z_offset=5,
-             mix_lift=20,
-             drop_tip=False)
+    protocol.delay(seconds=1)
 
-    # bind to beads
-    protocol.comment('Binding DNA to beads.')
-    protocol.delay(seconds=pause_bind/2)
-    
+    protocol.pause('Now spin down plate, unseal, and place back on '
+                   'mag deck.')
+
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
     magblock.engage(height_from_base=mag_engage_height)
