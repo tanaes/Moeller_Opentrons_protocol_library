@@ -43,7 +43,7 @@ Currently using MagBinding Beads (product number [D4100](https://www.zymoresearc
 ### OpenTrons equipment
 
 - OT-2 robot
-- Magnetic Module
+- Magnetic Module Gen2
 - 8-channel P300 pipette
 
 
