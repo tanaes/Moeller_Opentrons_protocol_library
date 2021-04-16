@@ -81,9 +81,6 @@ else:
 
 i5_rotation = (int(last_rotation) + 1) % 12
 
-with open(i5_record_fp, 'a') as f:
-    f.write('{0}\t{1}\n'.format(datetime.now(), i5_rotation))
-
 i5_cols = i5_cols[i5_rotation:] + i5_cols[:i5_rotation]
 
 
@@ -405,6 +402,10 @@ def run(protocol: protocol_api.ProtocolContext):
                                new_tip='never',
                                trash=False)
         pipette_right.drop_tip()
+
+    if not protocol.is_simulating():
+        with open(i5_record_fp, 'a') as f:
+            f.write('{0}\t{1}\n'.format(datetime.now(), i5_rotation))
 
     # Prompt user to remove plate and run on thermocycler
 
