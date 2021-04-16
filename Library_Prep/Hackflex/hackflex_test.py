@@ -12,7 +12,7 @@ metadata = {'apiLevel': '2.5',
 
 # Set to `True` to perform a short run, with brief pauses and only
 # one column of samples
-test_run = False
+test_run = True
 
 if test_run:
     pause_bind = 3
