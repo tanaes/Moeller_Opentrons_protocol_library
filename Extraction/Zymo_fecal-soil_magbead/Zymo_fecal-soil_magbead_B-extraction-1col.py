@@ -31,7 +31,7 @@ else:
 
 # define magnet engagement height for plates
 # (none if using labware with built-in specs)
-mag_engage_height = 6
+mag_engage_height = 4
 
 
 # MagBinding + beads cols
@@ -61,7 +61,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # define deck positions and labware
 
     # define hardware modules
-    magblock = protocol.load_module('Magnetic Module', 10)
+    magblock = protocol.load_module('magnetic module gen2', 10)
     magblock.disengage()
 
     # tips

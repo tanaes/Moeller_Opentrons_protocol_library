@@ -67,7 +67,7 @@ To save a deck slot, we pre-mix beads and buffer for the initial binding step. W
 
 - OT-2 robot
 - 8-channel P300 pipette
-- Magnetic module
+- Magnetic module gen2
 
 
 ### Other equipment
@@ -88,7 +88,7 @@ Beadbeater for 2 mL tubes.
 
 ### Deck layout
 
-![Part B deck layout](./deckmap_Zymo_fecal-soil_magbead_B.png)
+![Part B deck layout](./deckmap_Zymo_fecal-soil_magbead_Abead_B.png)
 
 ### Reagents
 
