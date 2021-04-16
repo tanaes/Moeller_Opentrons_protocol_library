@@ -76,7 +76,8 @@ if exists(i5_record_fp):
             last_time, last_rotation = line.rstrip().split('\t')
 else:
     with open(i5_record_fp, 'w') as f:
-        f.write('Timestamp\ti5_rotation\n')
+        f.write('Timestamp\ti5_rotation\n'
+                '{0}\t{1}\n'.format(datetime.now(), 11))
     last_rotation = 11
 
 i5_rotation = (int(last_rotation) + 1) % 12
@@ -390,7 +391,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                trash=False)
         pipette_right.drop_tip()
 
-    protocol.pause('Replace empty tip box in position %s with a new box of'
+    protocol.pause('Replace empty tip box in position {0} with a new box of'
                    '10µL filter tips.'.format(tiprack_primers.parent))
 
     for i, col in enumerate(cols):

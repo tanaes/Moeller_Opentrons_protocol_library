@@ -6,7 +6,6 @@ from os.path import join, exists
 from datetime import datetime
 from pathlib import Path
 
-
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
 
@@ -21,7 +20,7 @@ if test_run:
     pause_elute = 5
 
     # Limit columns
-    cols = ['A1', 'A2', 'A3']
+    # cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
 else:
     pause_bind = 3*60
     pause_mag = 5*60
@@ -69,7 +68,7 @@ i5_cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # get a rotation level 
-i5_record_fp = join(Path.home(),'.i5_record.txt')
+i5_record_fp = join(Path.home(), '.i5_record.txt')
 
 if exists(i5_record_fp):
     with open(i5_record_fp, 'r') as f:
@@ -77,7 +76,8 @@ if exists(i5_record_fp):
             last_time, last_rotation = line.rstrip().split('\t')
 else:
     with open(i5_record_fp, 'w') as f:
-        f.write('Timestamp\ti5_rotation\n')
+        f.write('Timestamp\ti5_rotation\n'
+                '{0}\t{1}\n'.format(datetime.now(), 11))
     last_rotation = 11
 
 i5_rotation = (int(last_rotation) + 1) % 12
@@ -391,7 +391,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                trash=False)
         pipette_right.drop_tip()
 
-    protocol.pause('Replace empty tip box in position %s with a new box of'
+    protocol.pause('Replace empty tip box in position {0} with a new box of'
                    '10µL filter tips.'.format(tiprack_primers.parent))
 
     for i, col in enumerate(cols):
