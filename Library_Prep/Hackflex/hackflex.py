@@ -3,9 +3,8 @@ from opentrons_functions.magbeads import (
     remove_supernatant, bead_wash, transfer_elute)
 from opentrons_functions.transfer import add_buffer
 from os.path import join, exists
-from os import getcwd
 from datetime import datetime
-
+from pathlib.Path import home
 
 metadata = {'apiLevel': '2.5',
             'author': 'Jon Sanders'}
@@ -69,7 +68,7 @@ i5_cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # get a rotation level 
-i5_record_fp = join('~/.i5_record.txt')
+i5_record_fp = join(home(), '.i5_record.txt')
 
 if exists(i5_record_fp):
     with open(i5_record_fp, 'r') as f:
