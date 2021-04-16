@@ -40,7 +40,9 @@ per reaction:
 
 ### Nextera-compatible index primers
 
-As written, this protocol uses a strip tube of i5 primers (can use single i5 primer across whole strip, or a unique i5 primer per tube), plus a plate of unique i7 indices. Primer working stocks are at 5 mM.
+As written, this protocol uses a plate eacgh of unique i7 and i5
+indices . Primer working stocks are at 2.5 µM.
+
 
 ### Paramagnetic beads for size selection
 
@@ -100,7 +102,6 @@ Reservoir plates can be washed and reused.
 	- 1-2: TB1 (200 µL/tube)
 	- 3: 1:40 diluted BLT beads (150 µL/tube)
 	- 4: TSB (150 µL/tube)
-	- 5: i5 primers (150 µL/tube)
 	- 6-7: PCR Master Mix (200 µL/tube)
 
 ## Protocol
@@ -120,7 +121,11 @@ Centrifuge plate, then unseal and place back on magblock. Robot will add Tagment
 - incubate @ 37 °C 15 min
 - hold @ 10 °C
 
-Centrifuge plate, then unseal and place back on magblock. Robot will wash beads and add PCR master mix for library amplification. At prompt, remove plate, seal, and run BLT program on thermocycler (cycle number can be adjusted for your application if necessary):
+Centrifuge plate, then unseal and place back on magblock. Robot will wash beads and add PCR master mix for library amplification. At prompt, unseal the i5 and i7 primer plates for the primer addition.
+
+***Make a note of the i5 primer rotation number for the protocol.*** Every time the protocol is executed, it will rotate the assignment of i5 columns to samples. This will allow libraries from up to 12 sequential plates to be pooled without worry of barcode overlap. For reference, a file recording the timestamp and i5 column rotation position is saved to the robot.
+
+At prompt, remove plate, seal, and run BLT program on thermocycler (cycle number can be adjusted for your application if necessary):
 
 **BLT protocol**
 
