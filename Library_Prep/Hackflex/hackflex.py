@@ -69,7 +69,7 @@ i5_cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6',
            'A7', 'A8', 'A9', 'A10', 'A11', 'A12']
 
 # get a rotation level 
-i5_record_fp = join(getcwd(), 'i5_record.txt')
+i5_record_fp = join('~/.i5_record.txt')
 
 if exists(i5_record_fp):
     with open(i5_record_fp, 'r') as f:
