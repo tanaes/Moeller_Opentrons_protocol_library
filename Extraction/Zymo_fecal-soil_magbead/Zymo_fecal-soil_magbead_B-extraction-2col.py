@@ -18,7 +18,7 @@ if test_run:
     pause_elute = 5*60
 
     # Limit columns
-    cols = ['A1','A1']
+    cols = ['A1', 'A2']
 else:
     pause_bind = 5*60
     pause_mag = 3*60
