@@ -144,7 +144,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # load plate on magdeck
     # mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
-    mag_plate = magblock.load_labware('nest_96_wellplate_100ul_pcr_full_skirt')
+    mag_plate = magblock.load_labware('biorad_96_wellplate_200ul_pcr')
 
     # initialize pipettes
     pipette_left = protocol.load_instrument('p300_multi',
