@@ -135,7 +135,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                     'wash buffers')
 
     # plates
-    samples = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+    samples = protocol.load_labware('nest_96_wellplate_100ul_pcr_full_skirt',
                                     1,
                                     'samples')
     i7_primers = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
