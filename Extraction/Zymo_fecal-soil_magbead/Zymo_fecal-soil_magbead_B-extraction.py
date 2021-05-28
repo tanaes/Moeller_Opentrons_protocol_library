@@ -206,6 +206,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        super_vol=500,
                                        drop_super_tip=False,
                                        mix_n=wash_mix,
+                                       mix_lift=12,
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
 
@@ -231,6 +232,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        super_vol=900,
                                        drop_super_tip=False,
                                        mix_n=wash_mix,
+                                       mix_lift=12,
                                        remaining=w2_remaining,
                                        mag_engage_height=mag_engage_height)
 
