@@ -557,6 +557,10 @@ def run(protocol: protocol_api.ProtocolContext):
                                          pause_s=pause_mag)
 
     # ### Dry
+
+    protocol.pause('Replace empty tiprack in position {0} with new rack of '
+                   '200 µL filter tips.'.format(tiprack_wash.parent))
+
     protocol.comment('Removing wash and drying beads.')
 
     # This should:
@@ -580,11 +584,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        drop_tip=True)
 
     # dry
-
     protocol.delay(seconds=pause_dry)
-
-    protocol.pause('Replace empty tiprack in position {0} with new rack of '
-                   '200 µL filter tips.'.format(tiprack_wash.parent))
 
     # ### Elute
     protocol.comment('Eluting DNA from beads.')
