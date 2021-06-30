@@ -88,12 +88,12 @@ Beadbeater for 2 mL tubes.
 
 ### Deck layout
 
-![Part B deck layout](./deckmap_Zymo_fecal-soil_magbead_Abead_B.png)
+![Part B deck layout](./deckmap_Zymo_fecal-soil_magbead_B.png)
 
 ### Reagents
 
 - 9: Reagents (USA Scientific 22 mL reservoir plate)
-	- 1-4: MagBinding Buffer + Beads mix (18 mL/well)
+	- 1-4: MagBinding Buffer + Beads mix (18 mL/well)s
 	- 5-7: MagBinding Buffer (19 mL/well)
 	- 8: Elution Buffer (7 mL)
 - 11: Wash buffers (USA Scientific 22 mL reservoir plate)
