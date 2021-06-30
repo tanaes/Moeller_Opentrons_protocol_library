@@ -114,13 +114,13 @@ def run(protocol: protocol_api.ProtocolContext):
     pipette_left.distribute(25,
                             mbb_wells, 
                             [mag_plate[x].top() for x in cols],
-                            mix_before=(6, 200)
+                            mix_before=(6, 200),
                             blow_out=True,
                             blowout_location='source well'
                             )
 
-    mbb_remaining, mbb_wells = add_buffer(pipette_left,
-                                          mbb_wells,
+    mbw_remaining, mbw_wells = add_buffer(pipette_left,
+                                          mbw_wells,
                                           mag_plate,
                                           cols,
                                           600,
