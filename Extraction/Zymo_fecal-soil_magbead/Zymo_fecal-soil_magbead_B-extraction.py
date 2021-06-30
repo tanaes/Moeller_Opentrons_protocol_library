@@ -4,7 +4,7 @@ from opentrons_functions.magbeads import (
 from opentrons_functions.transfer import add_buffer
 
 
-metadata = {'apiLevel': '2.5',
+metadata = {'apiLevel': '2.8',
             'author': 'Jon Sanders'}
 
 # Set to `True` to perform a short run, with brief pauses and only

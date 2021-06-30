@@ -3,7 +3,7 @@ from numpy import floor
 from itertools import chain
 
 metadata = {
-    'apiLevel': '2.5',
+    'apiLevel': '2.8',
     'author': 'Jon Sanders'}
 
 # Define parameters for protocol
