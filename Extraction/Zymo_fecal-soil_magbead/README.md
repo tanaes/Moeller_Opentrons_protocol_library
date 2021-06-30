@@ -40,15 +40,13 @@ Place uncapped tubes into the four 24-place OpenTrons tube racks. They will be t
 
 ## Buffers and Reagents
 
-### MagBinding Buffer + beads
-To save a deck slot, we pre-mix beads and buffer for the initial binding step. We need a total of 72 mL per extraction plate:
+### MagBinding beads
 
-- 2.9 mL beads
-- 69.1 mL MagBinding Buffer
+3 mL per plate. Dead volume can be saved and reused.
 
 ### MagBinding Buffer
 
-57 mL per plate.
+130 mL per plate.
 
 ### MagWash 1
 
@@ -93,8 +91,8 @@ Beadbeater for 2 mL tubes.
 ### Reagents
 
 - 9: Reagents (USA Scientific 22 mL reservoir plate)
-	- 1-4: MagBinding Buffer + Beads mix (18 mL/well)s
-	- 5-7: MagBinding Buffer (19 mL/well)
+	- 1: MagBinding Beads (4 mL/well)
+	- 2-7: MagBinding Buffer (19 mL/well)
 	- 8: Elution Buffer (7 mL)
 - 11: Wash buffers (USA Scientific 22 mL reservoir plate)
 	- 1-3: Wash Buffer 1 (19 mL/well)

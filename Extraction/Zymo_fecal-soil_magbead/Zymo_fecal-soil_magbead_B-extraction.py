@@ -34,11 +34,11 @@ else:
 mag_engage_height = 4
 
 
-# MagBinding + beads cols
-mbb_cols = ['A1', 'A2', 'A3', 'A4']
+# MagBinding beads cols
+mbb_cols = ['A1']
 
 # MagBinding cols
-mbw_cols = ['A5', 'A6', 'A7']
+mbw_cols = ['A2', 'A3', 'A4', 'A5', 'A6', 'A7']
 
 # Wash 1 columns
 w1_cols = ['A1', 'A2', 'A3']
@@ -91,7 +91,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                             'left',
                                             tip_racks=[tiprack_buffers])
 
-    # MagBindingBuffer + beads wells
+    # MagBinding beads wells
     mbb_wells = [reagents[x] for x in mbb_cols]
 
     # MagBindingBuffer wells
@@ -111,13 +111,20 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Adding beads to plate.')
 
     # add beads
+    pipette_left.distribute(25,
+                            mbb_wells, 
+                            [mag_plate[x].top() for x in cols],
+                            mix_before=(6, 200)
+                            blow_out=True,
+                            blowout_location='source well'
+                            )
+
     mbb_remaining, mbb_wells = add_buffer(pipette_left,
                                           mbb_wells,
                                           mag_plate,
                                           cols,
-                                          625,
-                                          18000/8,
-                                          pre_mix=10)
+                                          600,
+                                          18000/8)
 
     # ### Prompt user to place plate on rotator
     protocol.pause('Seal plate and place on rotator. Rotate at low '
