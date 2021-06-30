@@ -191,7 +191,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
 
-    # ### Do third wash: Wash 900 µL MagWash 2
+    # ### Do third wash: Wash 800 µL MagWash 2
     protocol.comment('Doing wash #3.')
     w2_remaining, w2_wells = bead_wash(
                                        # global arguments
@@ -209,7 +209,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        # mix arguments
                                        tiprack_wash,
                                        # optional arguments,
-                                       wash_vol=900,
+                                       wash_vol=800,
                                        super_vol=500,
                                        drop_super_tip=False,
                                        mix_n=wash_mix,
@@ -217,7 +217,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
 
-    # ### Do fourth wash: Wash 900 µL MagWash 2
+    # ### Do fourth wash: Wash 800 µL MagWash 2
     protocol.comment('Doing wash #4.')
     w2_remaining, w2_wells = bead_wash(
                                        # global arguments
@@ -235,8 +235,8 @@ def run(protocol: protocol_api.ProtocolContext):
                                        # mix arguments
                                        tiprack_wash,
                                        # optional arguments,
-                                       wash_vol=900,
-                                       super_vol=900,
+                                       wash_vol=800,
+                                       super_vol=800,
                                        drop_super_tip=False,
                                        mix_n=wash_mix,
                                        mix_lift=12,
@@ -260,7 +260,7 @@ def run(protocol: protocol_api.ProtocolContext):
                        cols,
                        tiprack_wash,
                        waste['A1'],
-                       super_vol=1000,
+                       super_vol=900,
                        rate=bead_flow,
                        bottom_offset=.2,
                        drop_tip=True)
