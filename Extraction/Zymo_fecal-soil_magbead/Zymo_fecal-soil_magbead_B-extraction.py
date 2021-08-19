@@ -14,7 +14,7 @@ test_run = False
 if test_run:
     pause_bind = 5*60
     pause_mag = 3*60
-    pause_dry  = 30*60
+    pause_dry = 30*60
     pause_elute = 5*60
 
     # Limit columns
@@ -54,6 +54,11 @@ bead_flow = .25
 wash_mix = 5
 
 
+# function relating volume to liquid height in magplate
+def vol_fn(x):
+    return(x/(3.14 * 3**2))
+
+
 def run(protocol: protocol_api.ProtocolContext):
 
     # ### Setup
@@ -69,8 +74,14 @@ def run(protocol: protocol_api.ProtocolContext):
                                             5)
     tiprack_elution = protocol.load_labware(
                             'opentrons_96_filtertiprack_200ul', 6)
-    tiprack_wash = protocol.load_labware('opentrons_96_tiprack_300ul',
-                                         4)
+    tiprack_wash1 = protocol.load_labware('opentrons_96_tiprack_300ul',
+                                          11)
+    tiprack_wash2 = protocol.load_labware('opentrons_96_tiprack_300ul',
+                                          8)
+    tiprack_wash3 = protocol.load_labware('opentrons_96_tiprack_300ul',
+                                          9)
+    tiprack_wash4 = protocol.load_labware('opentrons_96_tiprack_300ul',
+                                          4)
 
     # plates
     wash_buffers = protocol.load_labware('usascientific_12_reservoir_22ml',
@@ -87,7 +98,7 @@ def run(protocol: protocol_api.ProtocolContext):
     mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
 
     # initialize pipettes
-    pipette_left = protocol.load_instrument('p300_multi',
+    pipette_left = protocol.load_instrument('p300_multi_gen2',
                                             'left',
                                             tip_racks=[tiprack_buffers])
 
@@ -129,7 +140,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Prompt user to place plate on rotator
     protocol.pause('Seal plate and place on rotator. Rotate at low '
                    'speed for 10 minutes.')
-    
+
     protocol.delay(seconds=1)
 
     protocol.pause('Now spin down plate, unseal, and place back on '
@@ -152,16 +163,22 @@ def run(protocol: protocol_api.ProtocolContext):
                                          cols,
                                          # super arguments
                                          waste['A1'],
-                                         tiprack_wash,
+                                         tiprack_wash1,
                                          # wash buffer arguments,
                                          mbw_wells,
                                          19000/8,
                                          # mix arguments
-                                         tiprack_wash,
+                                         tiprack_wash2,
+                                         drop_mix_tip=False,
                                          # optional arguments
-                                         wash_vol=500,
+                                         wash_vol=290,
                                          super_vol=800,
-                                         drop_super_tip=False,
+                                         super_tip_vol=300,
+                                         wash_tip_vol=300,
+                                         super_blowout=False,
+                                         drop_super_tip=True,
+                                         rate=0.25,
+                                         vol_fn=vol_fn,
                                          mix_n=wash_mix,
                                          mix_lift=12,
                                          mag_engage_height=mag_engage_height)
@@ -177,16 +194,22 @@ def run(protocol: protocol_api.ProtocolContext):
                                        cols,
                                        # super arguments
                                        waste['A1'],
-                                       tiprack_wash,
+                                       tiprack_wash2,
                                        # wash buffer arguments
                                        w1_wells,
                                        19000/8,
                                        # mix arguments
-                                       tiprack_wash,
+                                       tiprack_wash3,
+                                       drop_mix_tip=False,
                                        # optional arguments,
-                                       wash_vol=500,
-                                       super_vol=500,
-                                       drop_super_tip=False,
+                                       wash_vol=290,
+                                       super_vol=290,
+                                       wash_tip_vol=300,
+                                       super_blowout=False,
+                                       super_tip_vol=300,
+                                       drop_super_tip=True,
+                                       rate=0.25,
+                                       vol_fn=vol_fn,
                                        mix_n=wash_mix,
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
@@ -202,20 +225,27 @@ def run(protocol: protocol_api.ProtocolContext):
                                        cols,
                                        # super arguments
                                        waste['A1'],
-                                       tiprack_wash,
+                                       tiprack_wash3,
                                        # wash buffer arguments
                                        w2_wells,
                                        21000/8,
                                        # mix arguments
-                                       tiprack_wash,
+                                       tiprack_wash4,
+                                       drop_mix_tip=False,
                                        # optional arguments,
-                                       wash_vol=800,
-                                       super_vol=500,
-                                       drop_super_tip=False,
+                                       wash_vol=290,
+                                       super_vol=290,
+                                       super_tip_vol=300,
+                                       super_blowout=False,
+                                       drop_super_tip=True,
+                                       rate=0.25,
+                                       vol_fn=vol_fn,
                                        mix_n=wash_mix,
                                        mix_lift=12,
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
+
+    protocol.pause('Replace empty tip box in position 9 with new tips.')
 
     # ### Do fourth wash: Wash 800 µL MagWash 2
     protocol.comment('Doing wash #4.')
@@ -228,16 +258,21 @@ def run(protocol: protocol_api.ProtocolContext):
                                        cols,
                                        # super arguments
                                        waste['A1'],
-                                       tiprack_wash,
+                                       tiprack_wash4,
                                        # wash buffer arguments
                                        w2_wells,
                                        21000/8,
                                        # mix arguments
-                                       tiprack_wash,
+                                       tiprack_wash3,
+                                       drop_mix_tip=False,
                                        # optional arguments,
-                                       wash_vol=800,
-                                       super_vol=800,
-                                       drop_super_tip=False,
+                                       wash_vol=290,
+                                       super_vol=290,
+                                       super_tip_vol=300,
+                                       super_blowout=False,
+                                       drop_super_tip=True,
+                                       rate=0.25,
+                                       vol_fn=vol_fn,
                                        mix_n=wash_mix,
                                        mix_lift=12,
                                        remaining=w2_remaining,
@@ -254,13 +289,16 @@ def run(protocol: protocol_api.ProtocolContext):
     # - trash tip
     # - leave magnet engaged
 
+    protocol.pause('Replace empty tip box in position 4 with new tips.')
+
     # remove supernatant
     remove_supernatant(pipette_left,
                        mag_plate,
                        cols,
-                       tiprack_wash,
+                       tiprack_wash3,
                        waste['A1'],
-                       super_vol=900,
+                       super_vol=400,
+                       tip_vol=300,
                        rate=bead_flow,
                        bottom_offset=.2,
                        drop_tip=True)
