@@ -38,10 +38,10 @@ def run(protocol: protocol_api.ProtocolContext):
     
     # Libraries
     library = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
-                                   4, 'library')
+                                   1, 'library')
 
     # Destination tube
-    tuberack = protocol.load_labware(tuberack_labware, 1)
+    tuberack = protocol.load_labware(tuberack_labware, 4)
 
     # tips
     tiprack_samples = protocol.load_labware('opentrons_96_filtertiprack_20ul',
