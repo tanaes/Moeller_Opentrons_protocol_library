@@ -19,7 +19,7 @@ vol = 2
 # Change tips between aspirations?
 tip_change = False
 
-tuberack_labware = 'opentrons_24_tuberack_generic_2ml_screwcap'
+tuberack_labware = 'opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap'
 
 def run(protocol: protocol_api.ProtocolContext):
 
