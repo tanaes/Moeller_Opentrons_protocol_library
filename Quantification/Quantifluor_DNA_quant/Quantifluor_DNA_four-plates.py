@@ -1,20 +1,17 @@
 from opentrons import protocol_api
-from opentrons.protocols.types import APIVersion
 from opentrons_functions.transfer import add_buffer, get_96_from_384_wells
 
 metadata = {
     'apiLevel': '2.5',
     'author': 'Jon Sanders'}
 
-
-api_version = APIVersion(2, 5)
-
+ 
 cols = ['{0}{1}'.format(row, col) for col in range(1, 25)
         for row in ['A', 'B']]
 
 trash_tips = True
 
-def run(protocol: protocol_api.ProtocolContext(api_version=api_version)):
+def run(protocol: protocol_api.ProtocolContext):
 
     # define deck positions and labware
 
