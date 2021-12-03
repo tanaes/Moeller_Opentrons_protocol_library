@@ -44,12 +44,12 @@ def run(protocol: protocol_api.ProtocolContext):
     # distribute 38 µL of quantification reagent into each well of the assay
     # plate. 
 
-    pipette_left.transfer(38,
+    pipette_left.distribute(38,
                           reagents['A1'],
                           [assay[x] for x in cols],
                           touch_tip=True,
                           trash=trash_tips,
-                          new_tip='always')
+                          new_tip='once')
 
     # add 2 µL of each std to each of the wells. Mix after dispensing.
     # Dispose of these tips.
