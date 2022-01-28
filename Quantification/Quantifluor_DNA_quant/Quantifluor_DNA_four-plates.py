@@ -46,7 +46,9 @@ def run(protocol: protocol_api.ProtocolContext):
 
     pipette_left.distribute(38,
                             reagents.wells_by_name()['A1'],
-                            assay.columns())
+                            assay.columns(),
+                            blow_out=True,
+                            blowout_location='source well')
 
     # add 2 µL of each sample to each of the wells. Mix after dispensing.
     # Dispose of these tips.
