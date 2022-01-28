@@ -16,7 +16,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # define deck positions and labware
 
     # tips
-    tiprack_300 = protocol.load_labware('opentrons_96_tiprack_300ul', 6)
+    tiprack_300 = protocol.load_labware('opentrons_96_tiprack_300ul', 9)
 
     tipracks_10f = [protocol.load_labware('opentrons_96_filtertiprack_10ul', x)
                     for x in [1, 4, 7, 10]]
@@ -25,7 +25,7 @@ def run(protocol: protocol_api.ProtocolContext):
     reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
                                      3, 'reagents')
     assay = protocol.load_labware('corning_384_wellplate_112ul_flat',
-                                  9, 'assay')
+                                  6, 'assay')
 
     samples = [protocol.load_labware('biorad_96_wellplate_200ul_pcr',
                                      x, 'samples')
@@ -44,16 +44,9 @@ def run(protocol: protocol_api.ProtocolContext):
     # plate. Use the same tip for the entirety of these transfers, then
     # replace it in the rack.
 
-    add_buffer(pipette_left,
-               [reagents[x] for x in ['A1', 'A2']],
-               assay,
-               cols,
-               38,
-               13000/8,
-               tip=None,
-               tip_vol=300,
-               remaining=None,
-               drop_tip=trash_tips)
+    pipette_left.distribute(38,
+                            reagents.wells_by_name()['A1'],
+                            assay.columns())
 
     # add 2 µL of each sample to each of the wells. Mix after dispensing.
     # Dispose of these tips.
@@ -64,6 +57,6 @@ def run(protocol: protocol_api.ProtocolContext):
                                plate.wells(),
                                [assay[x] for x in assay_wells],
                                mix_after=(1, 10),
-                               touch_tip=True,
+                               touch_tip=False,
                                trash=trash_tips,
                                new_tip='always')
