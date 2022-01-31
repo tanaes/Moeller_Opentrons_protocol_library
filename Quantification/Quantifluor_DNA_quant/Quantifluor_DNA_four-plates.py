@@ -2,7 +2,7 @@ from opentrons import protocol_api
 from opentrons_functions.transfer import add_buffer, get_96_from_384_wells
 
 metadata = {
-    'apiLevel': '2.5',
+    'apiLevel': '2.8',
     'author': 'Jon Sanders'}
 
  
