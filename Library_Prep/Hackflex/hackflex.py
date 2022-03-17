@@ -491,11 +491,11 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.delay(seconds=pause_mag)
 
     # Add buffers for small-cut size selection to new plate
-    # Add 20 µL SPRI beads
+    # Add 25 µL SPRI beads
     # buffer tips 7
     pipette_left.pick_up_tip()
     pipette_left.mix(10, 100, buffers[beads_col])
-    pipette_left.distribute(20,
+    pipette_left.distribute(25,
                             buffers[beads_col],
                             [samples[x] for x in cols],
                             mix_before=(2, 15),
