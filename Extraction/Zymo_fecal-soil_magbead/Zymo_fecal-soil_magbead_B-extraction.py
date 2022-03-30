@@ -38,14 +38,13 @@ mag_engage_height = 4
 mbb_cols = ['A1']
 
 # MagBinding cols
-mbw_cols = ['A2', 'A3', 'A4', 'A5', 'A6', 'A7']
+mbw_cols = ['A2', 'A3', 'A4', 'A5', 'A6']
 
 # Wash 1 columns
-w1_cols = ['A1', 'A2', 'A3']
+w1_cols = ['A1', 'A2']
 
 # Wash 2 columns
-w2_cols = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9',
-           'A10', 'A11', 'A12']
+w2_cols = ['A5', 'A6', 'A7', 'A8', 'A9']
 
 # bead aspiration flow rate
 bead_flow = .25
@@ -152,7 +151,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.delay(seconds=pause_mag)
 
-    # ### Do first wash: Wash 500 µL MagBinding buffer
+    # ### Do first wash: Wash 300 µL MagBinding buffer
     protocol.comment('Doing wash #1.')
     mbw_remaining, mbw_wells = bead_wash(
                                          # global arguments
@@ -183,7 +182,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mix_lift=12,
                                          mag_engage_height=mag_engage_height)
 
-    # ### Do second wash: Wash 500 µL MagWash 1
+    # ### Do second wash: Wash 300 µL MagWash 1
     protocol.comment('Doing wash #2.')
     w1_remaining, w1_wells = bead_wash(
                                        # global arguments
@@ -214,7 +213,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
 
-    # ### Do third wash: Wash 800 µL MagWash 2
+    # ### Do third wash: Wash 300 µL MagWash 2
     protocol.comment('Doing wash #3.')
     w2_remaining, w2_wells = bead_wash(
                                        # global arguments
@@ -228,7 +227,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        tiprack_wash3,
                                        # wash buffer arguments
                                        w2_wells,
-                                       21000/8,
+                                       19000/8,
                                        # mix arguments
                                        tiprack_wash4,
                                        drop_mix_tip=False,
@@ -247,7 +246,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.pause('Replace empty tip box in position 9 with new tips.')
 
-    # ### Do fourth wash: Wash 800 µL MagWash 2
+    # ### Do fourth wash: Wash 300 µL MagWash 2
     protocol.comment('Doing wash #4.')
     w2_remaining, w2_wells = bead_wash(
                                        # global arguments
@@ -261,7 +260,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        tiprack_wash4,
                                        # wash buffer arguments
                                        w2_wells,
-                                       21000/8,
+                                       19000/8,
                                        # mix arguments
                                        tiprack_wash3,
                                        drop_mix_tip=False,

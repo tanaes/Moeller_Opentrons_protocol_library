@@ -46,15 +46,15 @@ Place uncapped tubes into the four 24-place OpenTrons tube racks. They will be t
 
 ### MagBinding Buffer
 
-130 mL per plate.
+100 mL per plate. (5 cols)
 
 ### MagWash 1
 
-57 mL per plate.
+40 mL per plate. (2 cols) 
 
 ### MagWash 2
 
-189 mL per plate.
+100 mL per plate. (5 cols)
 
 ### Elution Buffer
 
@@ -92,11 +92,11 @@ Beadbeater for 2 mL tubes.
 
 - 9: Reagents (USA Scientific 22 mL reservoir plate)
 	- 1: MagBinding Beads (4 mL/well)
-	- 2-7: MagBinding Buffer (19 mL/well)
+	- 2-6: MagBinding Buffer (19 mL/well)
 	- 8: Elution Buffer (7 mL)
 - 11: Wash buffers (USA Scientific 22 mL reservoir plate)
-	- 1-3: Wash Buffer 1 (19 mL/well)
-	- 5-12: Wash Buffer 2 (21 mL/well)
+	- 1-2: Wash Buffer 1 (19 mL/well)
+	- 5-9: Wash Buffer 2 (19 mL/well)
 
 ## Protocol
 
