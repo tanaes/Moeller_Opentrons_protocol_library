@@ -130,7 +130,8 @@ def run(protocol: protocol_api.ProtocolContext):
                             mix_before=(6, 200),
                             blow_out=True,
                             blowout_location='source well',
-                            disposal_volume=10
+                            disposal_volume=10,
+                            air_gap=5
                             )
 
     mbw_remaining, mbw_wells = add_buffer(pipette_left,
