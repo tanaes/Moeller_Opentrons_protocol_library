@@ -38,7 +38,7 @@ mag_engage_height = 4
 mbb_cols = ['A1']
 
 # MagBinding cols
-mbw_cols = ['A2', 'A3', 'A4', 'A5', 'A6']
+mbw_cols = ['A2', 'A3', 'A4', 'A5', 'A6', 'A7']
 
 # Wash 1 columns
 w1_cols = ['A1', 'A2']
@@ -120,13 +120,17 @@ def run(protocol: protocol_api.ProtocolContext):
     # ### Add MagBinding buffer and beads to plate
     protocol.comment('Adding beads to plate.')
 
+    # temporarily decrease movement speed to minimize mess
+    pipette_left.default_speed = 200
+
     # add beads
-    pipette_left.distribute(25,
+    pipette_left.distribute(24,
                             mbb_wells, 
                             [mag_plate[x].top() for x in cols],
                             mix_before=(6, 200),
                             blow_out=True,
-                            blowout_location='source well'
+                            blowout_location='source well',
+                            disposal_volume=10
                             )
 
     mbw_remaining, mbw_wells = add_buffer(pipette_left,
@@ -135,6 +139,10 @@ def run(protocol: protocol_api.ProtocolContext):
                                           cols,
                                           600,
                                           18000/8)
+
+    # iterate to next full well
+    if mbw_remaining < 18000:
+        mbw_wells.pop(0)
 
     # ### Prompt user to place plate on rotator
     protocol.pause('Seal plate and place on rotator. Rotate at low '
@@ -165,7 +173,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          tiprack_wash1,
                                          # wash buffer arguments,
                                          mbw_wells,
-                                         19000/8,
+                                         18000/8,
                                          # mix arguments
                                          tiprack_wash2,
                                          drop_mix_tip=False,
@@ -181,6 +189,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          mix_n=wash_mix,
                                          mix_lift=12,
                                          mag_engage_height=mag_engage_height)
+    pipette_left.default_speed = 400
 
     # ### Do second wash: Wash 300 µL MagWash 1
     protocol.comment('Doing wash #2.')
@@ -196,7 +205,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        tiprack_wash2,
                                        # wash buffer arguments
                                        w1_wells,
-                                       19000/8,
+                                       18000/8,
                                        # mix arguments
                                        tiprack_wash3,
                                        drop_mix_tip=False,
@@ -227,7 +236,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        tiprack_wash3,
                                        # wash buffer arguments
                                        w2_wells,
-                                       19000/8,
+                                       18000/8,
                                        # mix arguments
                                        tiprack_wash4,
                                        drop_mix_tip=False,
@@ -243,6 +252,10 @@ def run(protocol: protocol_api.ProtocolContext):
                                        mix_lift=12,
                                        remaining=None,
                                        mag_engage_height=mag_engage_height)
+
+    # iterate to next full well
+    if w2_remaining < 18000:
+        w2_wells.pop(0)
 
     protocol.pause('Replace empty tip box in position 9 with new tips.')
 
@@ -260,7 +273,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        tiprack_wash4,
                                        # wash buffer arguments
                                        w2_wells,
-                                       19000/8,
+                                       18000/8,
                                        # mix arguments
                                        tiprack_wash3,
                                        drop_mix_tip=False,
